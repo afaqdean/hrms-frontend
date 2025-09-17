@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+# Get the latest commit message
+COMMIT_MSG=$(git log -1 --pretty=%B)
+
+# Only update changelog if this is not a changelog update commit itself
+if [[ "$COMMIT_MSG" != *"chore: update changelog"* ]]; then
+  echo "Updating CHANGELOG.md based on commit message: $COMMIT_MSG"
+  
+  # Run the update-changelog script
+  node scripts/update-changelog.js
+  
+  # If there are changes to CHANGELOG.md, commit them
+  if [[ -n $(git status --porcelain CHANGELOG.md package.json) ]]; then
+    git add CHANGELOG.md package.json
+    git commit --no-verify -m "chore: update changelog to version $(node -p "require('./package.json').version")"
+    echo "Changelog updated and committed."
+  else
+    echo "No changes to CHANGELOG.md."
+  fi
+fi 
