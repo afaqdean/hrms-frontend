@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.95] - 2025-09-17
+
+### Other Changes
+
+* initial commit ([8c07b9d](https://github.com/afaqdean/hrms-frontend/commit/8c07b9d))
+
+All notable changes to this project will be documented in this file.
+
 ## [0.3.0] - 2024-03-08
 
 ### Features
