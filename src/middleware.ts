@@ -1,10 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { auth } from 'auth';
-import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import { routing } from './libs/i18nNavigation';
-
-const intlMiddleware = createIntlMiddleware(routing);
 
 const publicPaths = ['/', '/sign-in', '/sign-up'];
 // Add service worker and PWA related paths
@@ -23,11 +20,36 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Extract tenant information from hostname
+  const hostname = req.headers.get('host') || '';
+  const hostParts = hostname.split('.');
+  let tenant = '';
+
+  if (hostParts.length >= 3) {
+    // For subdomain.hr-ify.com
+    tenant = hostParts[0] || '';
+  } else if (hostParts.length === 2) {
+    // For hr-ify.com (base domain)
+    tenant = 'base';
+  }
+
+  // Skip tenant detection for localhost
+  if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+    tenant = 'base';
+  }
+
+  // Add tenant information to request headers
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-tenant', tenant);
+  requestHeaders.set('x-tenant-type', tenant === 'base' ? 'base' : 'company');
+
   const publicPathnameRegex = new RegExp(`^(/(${routing.locales.join('|')}))?(${publicPaths.join('|')})?/?$`, 'i');
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
   if (isPublicPage) {
-    return intlMiddleware(req);
+    return NextResponse.next({
+      request: { headers: requestHeaders },
+    });
   }
 
   // Check if it's the dashboard root path that needs redirection
@@ -98,7 +120,9 @@ export default async function middleware(req: NextRequest) {
   }
 
   // Apply intl middleware for all requests
-  return intlMiddleware(req);
+  return NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 }
 
 export const config = {

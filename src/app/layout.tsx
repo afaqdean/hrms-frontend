@@ -9,6 +9,7 @@ import { MultiStepFormProvider } from '@/containers/admin/employee-management/co
 import { AuthProvider } from '@/context/AuthContext';
 import { LoadingProvider } from '@/context/LoadingContext';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { TenantProvider } from '@/context/TenantContext';
 import arcjet, { detectBot, request } from '@/libs/Arcjet';
 import { Env } from '@/libs/Env';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -172,25 +173,27 @@ export default async function RootLayout(props: Readonly<{
         {/* Add this class */}
         <Suspense fallback={<div>Loading...</div>}>
           <SessionProvider>
-            <AuthProvider>
-              <LoadingProvider>
-                <MultiStepFormProvider>
-                  <ReactQueryWrapper>
-                    <NotificationProvider>
-                      {props.children}
-                      <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+            <TenantProvider>
+              <AuthProvider>
+                <LoadingProvider>
+                  <MultiStepFormProvider>
+                    <ReactQueryWrapper>
+                      <NotificationProvider>
+                        {props.children}
+                        <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
 
-                      {/* Add structured data for better SEO */}
-                      <StructuredData type="Organization" />
-                      <StructuredData type="WebSite" />
+                        {/* Add structured data for better SEO */}
+                        <StructuredData type="Organization" />
+                        <StructuredData type="WebSite" />
 
-                      {/* Add the AuthErrorHandler for handling 401 errors */}
-                      <AuthErrorHandler />
-                    </NotificationProvider>
-                  </ReactQueryWrapper>
-                </MultiStepFormProvider>
-              </LoadingProvider>
-            </AuthProvider>
+                        {/* Add the AuthErrorHandler for handling 401 errors */}
+                        <AuthErrorHandler />
+                      </NotificationProvider>
+                    </ReactQueryWrapper>
+                  </MultiStepFormProvider>
+                </LoadingProvider>
+              </AuthProvider>
+            </TenantProvider>
           </SessionProvider>
         </Suspense>
 
