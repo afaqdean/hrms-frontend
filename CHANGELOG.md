@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.95] - 2025-09-18
+
+### Bug Fixes
+
+* typescrit error fix ([f851637](https://github.com/afaqdean/hrms-frontend/commit/f851637))
+
+All notable changes to this project will be documented in this file.
+
 ## [0.3.0] - 2024-03-08
 
 ### Features
