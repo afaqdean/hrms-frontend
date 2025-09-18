@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.98] - 2025-09-18
+
+### Bug Fixes
+
+* locale sing in issue fixed ([a84137f](https://github.com/afaqdean/hrms-frontend/commit/a84137f))
+
+All notable changes to this project will be documented in this file.
+
 ## [0.1.97] - 2025-09-18
 
 ### Features
