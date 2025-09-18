@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.96] - 2025-09-18
+
+### Features
+
+* company based implementation with new company sign up ([e24edf6](https://github.com/afaqdean/hrms-frontend/commit/e24edf6))
+
+All notable changes to this project will be documented in this file.
+
 ## [0.1.95] - 2025-09-18
 
 ### Bug Fixes
