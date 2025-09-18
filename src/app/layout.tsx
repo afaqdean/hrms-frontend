@@ -11,12 +11,9 @@ import { LoadingProvider } from '@/context/LoadingContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import arcjet, { detectBot, request } from '@/libs/Arcjet';
 import { Env } from '@/libs/Env';
-import { routing } from '@/libs/i18nNavigation';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SessionProvider } from 'next-auth/react';
-import { NextIntlClientProvider } from 'next-intl';
 
-import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Poppins } from 'next/font/google';
 // src/app/[locale]/(auth)/layout.tsx
 import { Suspense } from 'react';
@@ -43,9 +40,6 @@ const poppins = Poppins({
   preload: true,
   fallback: ['system-ui', 'sans-serif'],
 });
-export function generateStaticParams() {
-  return routing.locales.map(locale => ({ locale }));
-}
 // Improve security with Arcjet
 const aj = arcjet.withRule(
   detectBot({
@@ -59,13 +53,7 @@ const aj = arcjet.withRule(
 );
 export default async function RootLayout(props: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }>) {
-  const { locale } = await props.params;
-  // if (!routing.locales.includes(locale)) {
-  //   notFound();
-  // }
-  setRequestLocale(locale);
   // Verify the request with Arcjet
   if (Env.ARCJET_KEY) {
     const req = await request();
@@ -77,10 +65,8 @@ export default async function RootLayout(props: Readonly<{
       throw new Error('Access denied');
     }
   }
-  // Using internationalization in Client Components
-  const messages = await getMessages();
   return (
-    <html lang={locale} className={`${poppins.variable}`}>
+    <html lang="en" className={`${poppins.variable}`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -190,19 +176,17 @@ export default async function RootLayout(props: Readonly<{
               <LoadingProvider>
                 <MultiStepFormProvider>
                   <ReactQueryWrapper>
-                    <NextIntlClientProvider locale={locale} messages={messages}>
-                      <NotificationProvider>
-                        {props.children}
-                        <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+                    <NotificationProvider>
+                      {props.children}
+                      <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
 
-                        {/* Add structured data for better SEO */}
-                        <StructuredData type="Organization" />
-                        <StructuredData type="WebSite" />
+                      {/* Add structured data for better SEO */}
+                      <StructuredData type="Organization" />
+                      <StructuredData type="WebSite" />
 
-                        {/* Add the AuthErrorHandler for handling 401 errors */}
-                        <AuthErrorHandler />
-                      </NotificationProvider>
-                    </NextIntlClientProvider>
+                      {/* Add the AuthErrorHandler for handling 401 errors */}
+                      <AuthErrorHandler />
+                    </NotificationProvider>
                   </ReactQueryWrapper>
                 </MultiStepFormProvider>
               </LoadingProvider>
