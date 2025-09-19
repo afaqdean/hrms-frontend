@@ -132,7 +132,12 @@ export default function SignInForm() {
 
         // Keep loading state active during redirect
         setTimeout(() => {
-          if (values.role.toLowerCase() === 'admin') {
+          // Check if user has company information and redirect accordingly
+          if ((result as any)?.user?.companySubdomain && values.role.toLowerCase() === 'admin') {
+            // Redirect admin to their company subdomain
+            const companyUrl = `https://${(result as any).user.companySubdomain}.hr-ify.com/dashboard/admin/overview`;
+            window.location.href = companyUrl;
+          } else if (values.role.toLowerCase() === 'admin') {
             router.push('/dashboard/admin/overview');
           } else {
             router.push('/dashboard/employee/overview');

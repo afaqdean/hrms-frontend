@@ -27,7 +27,13 @@ const LoginContent = () => {
 
       // Use setTimeout to avoid Next.js router conflicts
       setTimeout(() => {
-        if (userRole === 'admin') {
+        // Check if user has company information and redirect accordingly
+        const userCompanySubdomain = (session?.user as any)?.companySubdomain;
+        if (userRole === 'admin' && userCompanySubdomain) {
+          // Redirect admin to their company subdomain
+          const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
+          window.location.href = companyUrl;
+        } else if (userRole === 'admin') {
           router.push('/dashboard/admin/overview');
         } else {
           router.push('/dashboard/employee/overview');

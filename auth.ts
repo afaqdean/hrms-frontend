@@ -120,6 +120,8 @@ export const authConfig: NextAuthConfig = {
             profilePic: data.user.profileImage || '',
             employeeID: data.user.employeeID || '',
             position: data.user.position || '',
+            companyId: data.user.companyId || null,
+            companySubdomain: data.user.companySubdomain || null,
           };
         } catch (error) {
           console.error('NextAuth authorize error:', error);
@@ -147,6 +149,8 @@ export const authConfig: NextAuthConfig = {
             role: user.role,
             employeeID: user.employeeID || '',
             position: user.position || '',
+            companyId: user.companyId || null,
+            companySubdomain: user.companySubdomain || null,
           },
         };
       }
@@ -223,6 +227,8 @@ export const authConfig: NextAuthConfig = {
             role: user.role,
             employeeID: user.employeeID || '',
             position: user.position || '',
+            companyId: user.companyId || null,
+            companySubdomain: user.companySubdomain || null,
           };
 
           cookieStore.set('userData', JSON.stringify(userData), {

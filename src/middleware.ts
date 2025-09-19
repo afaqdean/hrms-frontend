@@ -62,11 +62,16 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
-    // Get user role from session
+    // Get user role and company information from session
     const userRole = (session.user as any)?.role?.toLowerCase();
+    const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
-    // Redirect based on role
-    if (userRole === 'admin') {
+    // Redirect based on role and company
+    if (userRole === 'admin' && userCompanySubdomain) {
+      // Redirect admin to their company subdomain
+      const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
+      return NextResponse.redirect(companyUrl);
+    } else if (userRole === 'admin') {
       return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
     } else if (userRole === 'employee') {
       return NextResponse.redirect(new URL('/dashboard/employee/overview', req.url));
@@ -108,7 +113,14 @@ export default async function middleware(req: NextRequest) {
     // Enforce employee-only routes
     if (isEmployeeRoute && userRole !== 'employee') {
       // Admin trying to access employee routes, redirect to admin dashboard
-      return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
+      const userCompanySubdomain = (session.user as any)?.companySubdomain;
+      if (userRole === 'admin' && userCompanySubdomain) {
+        // Redirect admin to their company subdomain
+        const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
+        return NextResponse.redirect(companyUrl);
+      } else {
+        return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
+      }
     }
   }
 

@@ -12,11 +12,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  // Get user role
+  // Get user role and company information
   const userRole = (session.user as any)?.role?.toLowerCase();
+  const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
-  // Redirect based on role
-  if (userRole === 'admin') {
+  // Redirect based on role and company
+  if (userRole === 'admin' && userCompanySubdomain) {
+    // Redirect admin to their company subdomain
+    const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
+    return NextResponse.redirect(companyUrl);
+  } else if (userRole === 'admin') {
     return NextResponse.redirect(new URL('/dashboard/admin/overview', request.url));
   } else if (userRole === 'employee') {
     return NextResponse.redirect(new URL('/dashboard/employee/overview', request.url));
