@@ -94,6 +94,24 @@ export default function SignInForm() {
         tenantType = 'base';
       }
 
+      // Additional check for hr-ify.com specifically
+      if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com' || hostname.endsWith('.hr-ify.com')) {
+        if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com') {
+          tenant = 'base';
+          tenantType = 'base';
+        } else {
+          // Extract subdomain from hr-ify.com (excluding www)
+          const subdomain = hostname.replace('.hr-ify.com', '');
+          if (subdomain === 'www') {
+            tenant = 'base';
+            tenantType = 'base';
+          } else {
+            tenant = subdomain;
+            tenantType = 'company';
+          }
+        }
+      }
+
       // Use NextAuth for authentication with tenant information
       const result = await signIn('credentials', {
         redirect: false,

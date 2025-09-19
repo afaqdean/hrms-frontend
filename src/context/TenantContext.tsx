@@ -43,6 +43,24 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
         detectedTenantType = 'base';
       }
 
+      // Additional check for hr-ify.com specifically
+      if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com' || hostname.endsWith('.hr-ify.com')) {
+        if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com') {
+          detectedTenant = 'base';
+          detectedTenantType = 'base';
+        } else {
+          // Extract subdomain from hr-ify.com (excluding www)
+          const subdomain = hostname.replace('.hr-ify.com', '');
+          if (subdomain === 'www') {
+            detectedTenant = 'base';
+            detectedTenantType = 'base';
+          } else {
+            detectedTenant = subdomain;
+            detectedTenantType = 'company';
+          }
+        }
+      }
+
       setTenant(detectedTenant);
       setTenantType(detectedTenantType);
       setIsLoading(false);
