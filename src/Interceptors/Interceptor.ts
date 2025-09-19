@@ -5,7 +5,7 @@ import { parseCookies } from 'nookies';
 
 // Create an Axios instance
 export const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: (process.env.NEXT_PUBLIC_BASE_URL || 'https://code-huddle-hrms-dev-61ae656862e5.herokuapp.com'),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -24,6 +24,32 @@ API.interceptors.request.use(
         // Set the Authorization header properly
         config.headers.Authorization = `Bearer ${token}`;
       }
+
+      // Add tenant headers
+      const hostname = window.location.hostname;
+      const hostParts = hostname.split('.');
+      let tenant = 'base';
+      let tenantType = 'base';
+
+      if (hostParts.length >= 3) {
+        // For subdomain.hr-ify.com
+        tenant = hostParts[0] || 'base';
+        tenantType = 'company';
+      } else if (hostParts.length === 2) {
+        // For hr-ify.com (base domain)
+        tenant = 'base';
+        tenantType = 'base';
+      }
+
+      // Skip tenant detection for localhost
+      if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+        tenant = 'base';
+        tenantType = 'base';
+      }
+
+      // Set tenant headers
+      config.headers['x-tenant'] = tenant;
+      config.headers['x-tenant-type'] = tenantType;
     }
     return config;
   },
@@ -42,6 +68,10 @@ API.interceptors.response.use(
     console.error('Response error:', {
       status: error.response?.status,
       message: error.message,
+      url: error.config?.url,
+      method: error.config?.method,
+      data: error.response?.data,
+      headers: error.response?.headers,
     });
 
     // Skip auth error handling for OTP verification endpoint

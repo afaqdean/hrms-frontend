@@ -1,5 +1,4 @@
 import type { MetadataRoute } from 'next';
-import { AppConfig } from '@/utils/AppConfig';
 import { getBaseUrl } from '@/utils/Helpers';
 
 // Define all the routes in the application
@@ -30,25 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = getBaseUrl();
   const currentDate = new Date();
 
-  // Generate sitemap entries for all locales and routes
-  const sitemap: MetadataRoute.Sitemap = [];
-
-  // Add entries for each locale
-  AppConfig.locales.forEach((locale) => {
-    routes.forEach(({ path, changeFrequency, priority }) => {
-      // Skip default locale prefix as it's handled by as-needed config
-      const localePath = locale === AppConfig.defaultLocale
-        ? path
-        : `/${locale}${path}`;
-
-      sitemap.push({
-        url: `${baseUrl}${localePath}`,
-        lastModified: currentDate,
-        changeFrequency: changeFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
-        priority,
-      });
-    });
-  });
+  // Generate sitemap entries for all routes
+  const sitemap: MetadataRoute.Sitemap = routes.map(({ path, changeFrequency, priority }) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: currentDate,
+    changeFrequency: changeFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
+    priority,
+  }));
 
   return sitemap;
 }

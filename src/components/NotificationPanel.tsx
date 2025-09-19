@@ -3,7 +3,7 @@ import { useNotification } from '@/hooks';
 import { formatDistanceToNow } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { IoClose } from 'react-icons/io5';
@@ -15,20 +15,10 @@ const NotificationPanel = () => {
   const [bubbleTrigger, setBubbleTrigger] = useState(0);
   const [isEnablingNotifications, setIsEnablingNotifications] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
   const [isPWA, setIsPWA] = useState(false);
 
-  // Get the current locale from the URL or use a default
-  let locale = 'en';
-  try {
-    const localeMatch = pathname?.match(/^\/([a-z]{2})\//);
-    if (localeMatch && localeMatch[1]) {
-      locale = localeMatch[1];
-    }
-  } catch (error) {
-    console.error('Error getting locale:', error);
-  }
+  // No need for locale handling anymore
 
   // Use the notification context
   const {
@@ -195,7 +185,7 @@ const NotificationPanel = () => {
   };
 
   const handleViewAll = () => {
-    router.push(`/${locale}/dashboard/notifications`);
+    router.push('/dashboard/notifications');
     setIsOpen(false);
   };
 
@@ -334,7 +324,7 @@ const NotificationPanel = () => {
                                   }`}
                                 >
                                   <Link
-                                    href={`/${locale}/dashboard/notifications/${notification.id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${notification.timestamp}${notification.data ? `&data=${encodeURIComponent(JSON.stringify(notification.data))}` : ''}`}
+                                    href={`/dashboard/notifications/${notification.id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${notification.timestamp}${notification.data ? `&data=${encodeURIComponent(JSON.stringify(notification.data))}` : ''}`}
                                     onClick={() => handleNotificationClick(notification.id)}
                                     prefetch={isPWA} // Prefetch in PWA mode for faster navigation
                                   >
@@ -431,7 +421,7 @@ const NotificationPanel = () => {
                                     }`}
                                   >
                                     <Link
-                                      href={`/${locale}/dashboard/notifications/${notification.id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${notification.timestamp}${notification.data ? `&data=${encodeURIComponent(JSON.stringify(notification.data))}` : ''}`}
+                                      href={`/dashboard/notifications/${notification.id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${notification.timestamp}${notification.data ? `&data=${encodeURIComponent(JSON.stringify(notification.data))}` : ''}`}
                                       onClick={() => handleNotificationClick(notification.id)}
                                       prefetch={isPWA} // Prefetch in PWA mode for faster navigation
                                     >

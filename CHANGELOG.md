@@ -59,7 +59,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-* Enhanced sitemap generation with i18n support for all routes
+* Enhanced sitemap generation for all routes
 * Improved robots.txt configuration with better crawling rules
 * Added proper metadata for SEO optimization
 * Protected admin routes from search engine indexing
@@ -77,7 +77,6 @@ All notable changes to this project will be documented in this file.
 * Initial project setup with Next.js 15.1.0 and React 19.0.0
 * Implemented authentication system with NextAuth v5
 * Added dashboard layout with responsive design
-* Integrated i18n support with next-intl v3
 * Set up Tailwind CSS v3.4 for styling
 * Configured ESLint v9 with modern rules
 * Added Vitest v2 for unit testing
@@ -89,5 +88,4 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 * Fixed hydration issues with client components
-* Resolved i18n routing conflicts
 * Fixed authentication redirect issues

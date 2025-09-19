@@ -1,9 +1,6 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
-import createNextIntlPlugin from 'next-intl/plugin';
 import './src/libs/Env';
-
-const withNextIntl = createNextIntlPlugin('./src/libs/i18n.ts');
 
 const bundleAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -100,8 +97,7 @@ const nextConfig = {
 };
 
 // Apply plugins
-const configWithPlugins = withNextIntl(nextConfig);
-const analyzerConfig = bundleAnalyzer(configWithPlugins);
+const analyzerConfig = bundleAnalyzer(nextConfig);
 
 // Only use Sentry in production
 const config = process.env.NODE_ENV === 'production'

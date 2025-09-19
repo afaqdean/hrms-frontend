@@ -2,7 +2,7 @@
 
 import SalaryManagement from '@/components/admin/payroll/SalaryManagement';
 import { Button } from '@/components/ui/button';
-import { useRouter } from '@/libs/i18nNavigation';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { HiDocumentText } from 'react-icons/hi';
 

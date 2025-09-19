@@ -37,7 +37,7 @@ const getTenantHeaders = (): Record<string, string> => {
 };
 
 export const tenantApiCall = async (endpoint: string, options: RequestInit = {}) => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
   const tenantHeaders = getTenantHeaders();
 
   const response = await fetch(`${baseUrl}${endpoint}`, {

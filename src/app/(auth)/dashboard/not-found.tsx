@@ -3,11 +3,12 @@
 import Loader from '@/components/ui/Loader';
 import { useSession } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function DashboardNotFound() {
+function DashboardNotFoundContent() {
   const router = useRouter();
   const pathname = usePathname();
+
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -15,10 +16,8 @@ export default function DashboardNotFound() {
       return;
     }
 
-    const locale = pathname.split('/')[1] || 'en';
-
     if (!session) {
-      router.replace(`/${locale}/sign-in`);
+      router.replace('/sign-in');
       return;
     }
 
@@ -27,11 +26,11 @@ export default function DashboardNotFound() {
 
     // Redirect based on role
     if (userRole === 'admin') {
-      router.replace(`/${locale}/dashboard/admin/overview`);
+      router.replace('/dashboard/admin/overview');
     } else if (userRole === 'employee') {
-      router.replace(`/${locale}/dashboard/employee/overview`);
+      router.replace('/dashboard/employee/overview');
     } else {
-      router.replace(`/${locale}/sign-in`);
+      router.replace('/sign-in');
     }
   }, [session, status, router, pathname]);
 
@@ -46,3 +45,28 @@ export default function DashboardNotFound() {
     </div>
   );
 }
+
+const DashboardNotFound = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="flex size-full min-h-screen items-center justify-center">
+        <Loader
+          size="lg"
+          color="#000000"
+          withText
+          text="Loading..."
+        />
+      </div>
+    );
+  }
+
+  return <DashboardNotFoundContent />;
+};
+
+export default DashboardNotFound;

@@ -1,24 +1,18 @@
 import RoleBasedLayout from '@/components/RoleBasedLayout';
 import Header from '@/components/shared/header/Header';
 import { auth } from 'auth';
-import { setRequestLocale } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }>) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-
   // Ensure user is authenticated, redirect if not
   const session = await auth();
 
   if (!session) {
-    redirect(`/${locale}/sign-in`);
+    redirect('/sign-in');
   }
 
   // Get user role from session
@@ -26,7 +20,7 @@ export default async function DashboardLayout({
 
   // Check if user has a valid role
   if (!userRole) {
-    redirect(`/${locale}/sign-in`);
+    redirect('/sign-in');
   }
 
   return (

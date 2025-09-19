@@ -10,7 +10,6 @@ Key technical highlights include:
 - Fully responsive design with Tailwind CSS 3.4
 - Progressive Web App (PWA) capabilities with offline support
 - Real-time notifications with Firebase Cloud Messaging
-- Multi-language support with next-intl v3
 - Comprehensive SEO optimization
 - Enterprise-grade security with NextAuth v5
 
@@ -116,7 +115,6 @@ The application includes a comprehensive notification system:
 │   ├── interfaces                  # TypeScript interfaces
 │   ├── lib                         # Core library code
 │   ├── libs                        # Third-party library integrations
-│   ├── locales                     # i18n translation files
 │   ├── styles                      # Global styles
 │   ├── types                       # TypeScript type definitions
 │   ├── utils                       # Utility functions
@@ -130,7 +128,6 @@ The application includes a comprehensive notification system:
 ├── checkly.config.ts               # Monitoring configuration
 ├── commitlint.config.ts            # Commit linting rules
 ├── components.json                 # UI component configuration
-├── crowdin.yml                     # Translation service config
 ├── eslint.config.mjs               # ESLint configuration
 ├── next.config.ts                  # Next.js configuration
 ├── package.json                    # Project dependencies
@@ -186,7 +183,6 @@ Developer experience first, extremely flexible code structure and only keep what
 - ✅ Strict Mode for TypeScript and React 19
 - 👤 Passwordless Authentication with, Social Auth (Google , GitHub), Passwordless login with Passkeys, User Impersonation
 - 💽 Offline and local development database with PGlite
-- 🌐 Multi-language (i18n) with [next-intl](https://next-intl-docs.vercel.app/) v3 and [Crowdin](https://l.crowdin.com/next-js)
 - ♻️ Type-safe environment variables with T3 Env
 - ⌨️ Form handling with React Hook Form
 - 🔴 Validation library with Zod
@@ -226,14 +222,6 @@ Built-in feature from Next.js:
 ### Set up authentication
 
 The Auth Version 5 beta is already done. You just have have to change the environment variables in .env.local file and then update the api in the auth.ts file.
-
-### Translation (i18n) setup
-
-For translation, the project uses `next-intl` combined with [Crowdin](https://l.crowdin.com/next-js). As a developer, you only need to take care of the English (or another default language) version. Translations for other languages are automatically generated and handled by Crowdin. You can use Crowdin to collaborate with your translation team or translate the messages yourself with the help of machine translation.
-
-To set up translation (i18n), create an account at [Crowdin.com](https://l.crowdin.com/next-js) and create a new project. In the newly created project, you will be able to find the project ID. You will also need to create a new Personal Access Token by going to Account Settings > API. Then, in your GitHub Actions, you need to define the following environment variables: `CROWDIN_PROJECT_ID` and `CROWDIN_PERSONAL_TOKEN`.
-
-After defining the environment variables in your GitHub Actions, your localization files will be synchronized with Crowdin every time you push a new commit to the `main` branch.
 
 ### Customization
 

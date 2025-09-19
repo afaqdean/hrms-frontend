@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
-import { AppConfig } from '@/utils/AppConfig';
 import { getBaseUrl } from '@/utils/Helpers';
 
 type SEOMetadataProps = {
   title?: string;
   description?: string;
   path: string;
-  locale: string;
   openGraph?: {
     title?: string;
     description?: string;
@@ -26,22 +24,13 @@ export function generateSEOMetadata({
   title,
   description,
   path,
-  locale,
   openGraph,
   twitter,
 }: SEOMetadataProps): Metadata {
   const baseUrl = getBaseUrl();
 
   // Generate canonical URL
-  const canonicalPath = locale === AppConfig.defaultLocale ? path : `/${locale}${path}`;
-  const canonicalUrl = `${baseUrl}${canonicalPath}`;
-
-  // Generate alternate language URLs
-  const alternateLanguages: Record<string, string> = {};
-  AppConfig.locales.forEach((lang) => {
-    const localePath = lang === AppConfig.defaultLocale ? path : `/${lang}${path}`;
-    alternateLanguages[lang] = `${baseUrl}${localePath}`;
-  });
+  const canonicalUrl = `${baseUrl}${path}`;
 
   // Default title and description
   const pageTitle = title || 'HRMS - Human Resource Management System';
@@ -52,14 +41,12 @@ export function generateSEOMetadata({
     description: pageDescription,
     alternates: {
       canonical: canonicalUrl,
-      languages: alternateLanguages,
     },
     openGraph: {
       title: openGraph?.title || pageTitle,
       description: openGraph?.description || pageDescription,
       url: canonicalUrl,
       siteName: 'HRMS',
-      locale,
       type: 'website',
       images: openGraph?.images?.map(image => ({
         url: image.startsWith('http') ? image : `${baseUrl}${image}`,

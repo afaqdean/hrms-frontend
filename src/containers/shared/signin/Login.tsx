@@ -5,11 +5,12 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-const Login = () => {
-  const { status, data: session } = useSession();
+const LoginContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const router = useRouter();
+
+  const { status, data: session } = useSession();
 
   useEffect(() => {
     // Simple authentication check
@@ -62,6 +63,24 @@ const Login = () => {
       </div>
     </div>
   );
+};
+
+const Login = () => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <LoadingSpinner size="lg" text="Loading..." />
+      </div>
+    );
+  }
+
+  return <LoginContent />;
 };
 
 export default Login;

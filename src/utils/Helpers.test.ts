@@ -1,20 +1,19 @@
-import { routing } from '@/libs/i18nNavigation';
-import { getI18nPath } from './Helpers';
+import { getCanonicalUrl } from './Helpers';
 
 describe('Helpers', () => {
-  describe('getI18nPath function', () => {
-    it('should not change the path for default language', () => {
-      const url = '/random-url';
-      const locale = routing.defaultLocale;
+  describe('getCanonicalUrl function', () => {
+    it('should return the correct canonical URL for a given path', () => {
+      const path = '/dashboard/admin/overview';
+      const result = getCanonicalUrl(path);
 
-      expect(getI18nPath(url, locale)).toBe(url);
+      expect(result).toContain('/dashboard/admin/overview');
     });
 
-    it('should prepend the locale to the path for non-default language', () => {
-      const url = '/random-url';
-      const locale = 'fr';
+    it('should handle root path correctly', () => {
+      const path = '/';
+      const result = getCanonicalUrl(path);
 
-      expect(getI18nPath(url, locale)).toMatch(/^\/fr/);
+      expect(result).toContain('/');
     });
   });
 });

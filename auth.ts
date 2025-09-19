@@ -24,7 +24,7 @@ type UnsafeUnwrappedCookies = {
   ) => void;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://honest-dog-dev-104c88de45c2.herokuapp.com/api';
+const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || 'https://code-huddle-hrms-dev-61ae656862e5.herokuapp.com').replace(/\/$/, '');
 // These interfaces are put in to another next-auth.s.ts file inside the types folder.
 // declare module 'next-auth' {
 //   type Session = {
@@ -83,9 +83,17 @@ export const authConfig: NextAuthConfig = {
       },
       async authorize(credentials) {
         try {
+          // Extract tenant information from credentials
+          const tenant = (credentials as any)?.tenant || 'base';
+          const tenantType = (credentials as any)?.tenantType || 'base';
+
           const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-tenant': tenant,
+              'x-tenant-type': tenantType,
+            },
             body: JSON.stringify({
               email: credentials?.email,
               password: credentials?.password,

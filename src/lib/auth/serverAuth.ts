@@ -8,17 +8,17 @@ import { hasRole, isValidSession } from './roleUtils';
  * Server component function to protect routes based on roles
  * Use this in layout.tsx files of protected routes
  */
-export async function protectRoute(locale: string, allowedRoles: UserRole[]) {
+export async function protectRoute(allowedRoles: UserRole[]) {
   const session = await auth() as ExtendedSession;
 
   // Not authenticated
   if (!session) {
-    redirect(`/${locale}/sign-in`);
+    redirect('/sign-in');
   }
 
   // Check token validity
   if (!isValidSession(session)) {
-    redirect(`/${locale}/sign-in`);
+    redirect('/sign-in');
   }
 
   // Get user role
@@ -28,12 +28,12 @@ export async function protectRoute(locale: string, allowedRoles: UserRole[]) {
   if (!hasRole(session, allowedRoles)) {
     // Redirect to appropriate dashboard based on user role
     if (userRole === ROLES.ADMIN) {
-      redirect(`/${locale}/dashboard/admin/overview`);
+      redirect('/dashboard/admin/overview');
     } else if (userRole === ROLES.EMPLOYEE) {
-      redirect(`/${locale}/dashboard/employee/overview`);
+      redirect('/dashboard/employee/overview');
     } else {
       // Fallback if role is unknown
-      redirect(`/${locale}/sign-in`);
+      redirect('/sign-in');
     }
   }
 
@@ -43,13 +43,13 @@ export async function protectRoute(locale: string, allowedRoles: UserRole[]) {
 /**
  * Protect route requiring admin access
  */
-export async function protectAdminRoute(locale: string) {
-  return protectRoute(locale, [ROLES.ADMIN]);
+export async function protectAdminRoute() {
+  return protectRoute([ROLES.ADMIN]);
 }
 
 /**
  * Protect route requiring employee access
  */
-export async function protectEmployeeRoute(locale: string) {
-  return protectRoute(locale, [ROLES.EMPLOYEE]);
+export async function protectEmployeeRoute() {
+  return protectRoute([ROLES.EMPLOYEE]);
 }

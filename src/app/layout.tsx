@@ -14,7 +14,6 @@ import arcjet, { detectBot, request } from '@/libs/Arcjet';
 import { Env } from '@/libs/Env';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SessionProvider } from 'next-auth/react';
-
 import { Poppins } from 'next/font/google';
 // src/app/[locale]/(auth)/layout.tsx
 import { Suspense } from 'react';
@@ -99,11 +98,6 @@ export default async function RootLayout(props: Readonly<{
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                let registration = null;
-                let updateFoundListener = null;
-                let stateChangeListener = null;
-                let messageListener = null;
-                
                 window.addEventListener('load', function() {
                   // Check if the service worker file exists before registering
                   fetch('/sw.js')
@@ -118,23 +112,18 @@ export default async function RootLayout(props: Readonly<{
                         updateViaCache: 'none'
                       });
                     })
-                    .then(reg => {
-                      registration = reg;
+                    .then(registration => {
                       console.log('Service Worker registration successful with scope: ', registration.scope);
                       
                       // Handle updates
-                      updateFoundListener = () => {
+                      registration.addEventListener('updatefound', () => {
                         const newWorker = registration.installing;
                         console.log('Service Worker update found!');
                         
-                        stateChangeListener = () => {
+                        newWorker.addEventListener('statechange', () => {
                           console.log('Service Worker state changed:', newWorker.state);
-                        };
-                        
-                        newWorker.addEventListener('statechange', stateChangeListener);
-                      };
-                      
-                      registration.addEventListener('updatefound', updateFoundListener);
+                        });
+                      });
                     })
                     .catch(error => {
                       console.error('Service Worker registration failed: ', error);
@@ -143,23 +132,8 @@ export default async function RootLayout(props: Readonly<{
                 });
                 
                 // Log any service worker messages
-                messageListener = (event) => {
+                navigator.serviceWorker.addEventListener('message', event => {
                   console.log('Message from Service Worker:', event.data);
-                };
-                
-                navigator.serviceWorker.addEventListener('message', messageListener);
-                
-                // Cleanup function to remove event listeners
-                window.addEventListener('beforeunload', function() {
-                  if (registration && updateFoundListener) {
-                    registration.removeEventListener('updatefound', updateFoundListener);
-                  }
-                  if (stateChangeListener) {
-                    // Note: We can't remove this as the worker might be gone
-                  }
-                  if (messageListener) {
-                    navigator.serviceWorker.removeEventListener('message', messageListener);
-                  }
                 });
               } else {
                 console.log('Service workers are not supported in this browser.');

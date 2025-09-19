@@ -9,7 +9,7 @@ export async function GET(
     const { subdomain } = await context.params;
 
     // Forward the request to the backend
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const backendUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';
     const response = await fetch(`${backendUrl}/company/subdomain/${subdomain}`, {
       method: 'GET',
       headers: {

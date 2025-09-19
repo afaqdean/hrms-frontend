@@ -1,16 +1,15 @@
 import type { NextRequest } from 'next/server';
 import { auth } from 'auth';
 import { NextResponse } from 'next/server';
-import { routing } from './libs/i18nNavigation';
 
 const publicPaths = ['/', '/sign-in', '/sign-up'];
 // Add service worker and PWA related paths
 const pwaFiles = ['/sw.js', '/offline.html', '/manifest.json', '/android-chrome-192x192.png', '/android-chrome-512x512.png'];
 
 // Define protected route patterns
-const adminRoutePattern = /^\/[^/]+\/dashboard\/admin/;
-const employeeRoutePattern = /^\/[^/]+\/dashboard\/employee/;
-const dashboardRootPattern = /^\/[^/]+\/dashboard\/?$/;
+const adminRoutePattern = /^\/dashboard\/admin/;
+const employeeRoutePattern = /^\/dashboard\/employee/;
+const dashboardRootPattern = /^\/dashboard\/?$/;
 
 export default async function middleware(req: NextRequest) {
   // Handle service worker and PWA related files
@@ -43,7 +42,7 @@ export default async function middleware(req: NextRequest) {
   requestHeaders.set('x-tenant', tenant);
   requestHeaders.set('x-tenant-type', tenant === 'base' ? 'base' : 'company');
 
-  const publicPathnameRegex = new RegExp(`^(/(${routing.locales.join('|')}))?(${publicPaths.join('|')})?/?$`, 'i');
+  const publicPathnameRegex = new RegExp(`^(?:${publicPaths.join('|')})?/?$`, 'i');
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
   if (isPublicPage) {
@@ -60,22 +59,20 @@ export default async function middleware(req: NextRequest) {
 
     // If no session, redirect to sign-in
     if (!session) {
-      const locale = req.nextUrl.pathname.split('/')[1] || 'en';
-      return NextResponse.redirect(new URL(`/${locale}/sign-in`, req.url));
+      return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
     // Get user role from session
     const userRole = (session.user as any)?.role?.toLowerCase();
 
     // Redirect based on role
-    const locale = req.nextUrl.pathname.split('/')[1] || 'en';
     if (userRole === 'admin') {
-      return NextResponse.redirect(new URL(`/${locale}/dashboard/admin/overview`, req.url));
+      return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
     } else if (userRole === 'employee') {
-      return NextResponse.redirect(new URL(`/${locale}/dashboard/employee/overview`, req.url));
+      return NextResponse.redirect(new URL('/dashboard/employee/overview', req.url));
     } else {
       // No valid role, redirect to sign-in
-      return NextResponse.redirect(new URL(`/${locale}/sign-in`, req.url));
+      return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }
 
@@ -89,9 +86,8 @@ export default async function middleware(req: NextRequest) {
 
     // If no session, redirect to sign-in
     if (!session) {
-      const locale = req.nextUrl.pathname.split('/')[1] || 'en';
       const callbackUrl = encodeURIComponent(req.nextUrl.href);
-      return NextResponse.redirect(new URL(`/${locale}/sign-in?callbackUrl=${callbackUrl}`, req.url));
+      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, req.url));
     }
 
     // Get user role from session
@@ -100,26 +96,23 @@ export default async function middleware(req: NextRequest) {
     // Check role-based access
     if (!userRole) {
       // No role defined, redirect to sign-in
-      const locale = req.nextUrl.pathname.split('/')[1] || 'en';
-      return NextResponse.redirect(new URL(`/${locale}/sign-in`, req.url));
+      return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
     // Enforce admin-only routes
     if (isAdminRoute && userRole !== 'admin') {
       // Not an admin, redirect to employee dashboard
-      const locale = req.nextUrl.pathname.split('/')[1] || 'en';
-      return NextResponse.redirect(new URL(`/${locale}/dashboard/employee/overview`, req.url));
+      return NextResponse.redirect(new URL('/dashboard/employee/overview', req.url));
     }
 
     // Enforce employee-only routes
     if (isEmployeeRoute && userRole !== 'employee') {
       // Admin trying to access employee routes, redirect to admin dashboard
-      const locale = req.nextUrl.pathname.split('/')[1] || 'en';
-      return NextResponse.redirect(new URL(`/${locale}/dashboard/admin/overview`, req.url));
+      return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
     }
   }
 
-  // Apply intl middleware for all requests
+  // Continue with the request
   return NextResponse.next({
     request: { headers: requestHeaders },
   });

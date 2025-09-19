@@ -12,8 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import useEmployees from '@/hooks/useEmployees';
 import useUpdateEmployeeSalary from '@/hooks/useUpdateEmployeeSalary';
-import { useRouter } from '@/libs/i18nNavigation';
 import { MoreVertical, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import Avatar from '../../shared/avatars/avatar/Avatar';
 

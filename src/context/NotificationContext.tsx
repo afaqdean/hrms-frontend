@@ -111,17 +111,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           // Generate a unique ID for the notification
           const id = Date.now().toString();
 
-          // Get the current locale from the URL or use a default
-          let locale = 'en';
-          try {
-            const urlPath = window.location.pathname;
-            const localeMatch = urlPath.match(/^\/([a-z]{2})\//);
-            if (localeMatch && localeMatch[1]) {
-              locale = localeMatch[1];
-            }
-          } catch (error) {
-            console.error('Error getting locale:', error);
-          }
+          // No need for locale handling anymore
 
           // Show toast notification
           toast.info(
@@ -137,7 +127,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               onClick: () => {
                 // Navigate to notification detail page when toast is clicked
                 if (typeof window !== 'undefined') {
-                  window.location.href = `/${locale}/dashboard/notifications/${id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${Date.now()}${data ? `&data=${encodeURIComponent(JSON.stringify(data))}` : ''}`;
+                  window.location.href = `/dashboard/notifications/${id}?title=${encodeURIComponent(notification.title)}&body=${encodeURIComponent(notification.body)}&timestamp=${Date.now()}${data ? `&data=${encodeURIComponent(JSON.stringify(data))}` : ''}`;
                 }
               },
             },

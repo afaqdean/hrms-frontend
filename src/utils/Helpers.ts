@@ -1,4 +1,3 @@
-import { routing } from '@/libs/i18nNavigation';
 import { format, isValid, parseISO } from 'date-fns';
 
 export const getBaseUrl = () => {
@@ -20,57 +19,22 @@ export const getBaseUrl = () => {
   return 'http://localhost:3000';
 };
 
-export const getI18nPath = (url: string, locale: string) => {
-  if (locale === routing.defaultLocale) {
-    return url;
-  }
-
-  return `/${locale}${url}`;
-};
-
 /**
  * Generate a canonical URL for the current page
- * @param path - The current path (without locale)
- * @param locale - The current locale
+ * @param path - The current path
  * @returns The canonical URL
  */
-export const getCanonicalUrl = (path: string, locale: string) => {
+export const getCanonicalUrl = (path: string) => {
   const baseUrl = getBaseUrl();
-  const canonicalPath = locale === routing.defaultLocale ? path : `/${locale}${path}`;
 
   // Remove trailing slash except for the homepage
-  const normalizedPath = canonicalPath === '' || canonicalPath === '/'
+  const normalizedPath = path === '' || path === '/'
     ? '/'
-    : canonicalPath.endsWith('/')
-      ? canonicalPath.slice(0, -1)
-      : canonicalPath;
+    : path.endsWith('/')
+      ? path.slice(0, -1)
+      : path;
 
   return `${baseUrl}${normalizedPath}`;
-};
-
-/**
- * Generate alternate language URLs for hreflang tags
- * @param path - The current path (without locale)
- * @returns An array of alternate language URLs
- */
-export const getAlternateLanguageUrls = (path: string) => {
-  const baseUrl = getBaseUrl();
-
-  return routing.locales.map((locale) => {
-    const localePath = locale === routing.defaultLocale ? path : `/${locale}${path}`;
-
-    // Remove trailing slash except for the homepage
-    const normalizedPath = localePath === '' || localePath === '/'
-      ? '/'
-      : localePath.endsWith('/')
-        ? localePath.slice(0, -1)
-        : localePath;
-
-    return {
-      locale,
-      url: `${baseUrl}${normalizedPath}`,
-    };
-  });
 };
 
 /**

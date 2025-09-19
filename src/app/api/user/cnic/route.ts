@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // Make a request to the existing user profile endpoint
-      const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/user/profile`, {
+      const profileResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/user/profile`, {
         headers: {
           'Authorization': `Bearer ${(session as any).accessToken}`,
           'Content-Type': 'application/json',

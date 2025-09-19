@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Bell, Calendar, Clock, Copy, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 type NotificationData = {
   id: string;
@@ -146,7 +146,7 @@ const MobileBrowserNotificationTester = () => {
   );
 };
 
-export default function NotificationDetailPage() {
+function NotificationDetailPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const [notification, setNotification] = useState<NotificationData | null>(null);
@@ -446,5 +446,13 @@ export default function NotificationDetailPage() {
         </motion.div>
       )}
     </div>
+  );
+}
+
+export default function NotificationDetailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NotificationDetailPageContent />
+    </Suspense>
   );
 }

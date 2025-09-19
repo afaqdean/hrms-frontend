@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { ButtonLoadingSpinner } from '@/components/ui/loading-spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useTenant } from '@/context/useTenant';
 import { cookieUtils } from '@/lib/cookie-utils';
 import huddleImage from '@/public/assets/huddle-image.png';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,6 +40,7 @@ export default function SignInForm() {
   const router = useRouter();
   const [accountNotFound, setAccountNotFound] = useState<boolean> (false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { tenantType } = useTenant();
 
   // Initialize the form using react-hook-form and Zod resolver
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,12 +72,36 @@ export default function SignInForm() {
         localStorage.removeItem('refreshToken');
       }
 
-      // Use NextAuth for authentication
+      // Extract tenant information from the current hostname
+      const hostname = window.location.hostname;
+      const hostParts = hostname.split('.');
+      let tenant = 'base';
+      let tenantType = 'base';
+
+      if (hostParts.length >= 3) {
+        // For subdomain.hr-ify.com
+        tenant = hostParts[0] || 'base';
+        tenantType = 'company';
+      } else if (hostParts.length === 2) {
+        // For hr-ify.com (base domain)
+        tenant = 'base';
+        tenantType = 'base';
+      }
+
+      // Skip tenant detection for localhost
+      if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+        tenant = 'base';
+        tenantType = 'base';
+      }
+
+      // Use NextAuth for authentication with tenant information
       const result = await signIn('credentials', {
         redirect: false,
         email: values.email,
         password: values.password,
         role: values.role,
+        tenant,
+        tenantType,
       });
 
       if (result?.error) {
@@ -213,6 +239,31 @@ export default function SignInForm() {
                       'Sign In'
                     )}
               </Button>
+
+              {/* Company Signup Section - Only show on base domain */}
+              {tenantType === 'base' && (
+                <div className="mt-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="bg-white px-2 text-gray-500">New to HuddleHR?</span>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <Link href="/company-signup">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full border-primary text-primary hover:bg-primary hover:text-white"
+                      >
+                        Sign Up Your Company
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </form>
           </Form>
         </CardContent>
