@@ -13,12 +13,7 @@ export const useAdminLoanRequests = () => {
       const loans = loanData?.loanRequests || loanData?.loans || loanData || [];
 
       // Fetch employees to populate employee details (as fallback)
-      const { data: employeeData } = await API.get('/user/users', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const { data: employeeData } = await API.get('/user/users');
 
       const employees = employeeData || [];
 

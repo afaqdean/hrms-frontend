@@ -8,12 +8,7 @@ const useEmployees = () => {
 
   const fetchEmployees = async () => {
     try {
-      const { data } = await API.get(`/user/users`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const { data } = await API.get(`/user/users`);
 
       return data?.map((item: Employee) => ({
         ...item,
