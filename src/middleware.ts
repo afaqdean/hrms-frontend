@@ -45,7 +45,24 @@ export default async function middleware(req: NextRequest) {
   const publicPathnameRegex = new RegExp(`^(?:${publicPaths.join('|')})?/?$`, 'i');
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
+  // If it's a public page, check if user is logged in and should be redirected to their company
   if (isPublicPage) {
+    // Only check for redirect if user is on base domain and not on sign-in/sign-up pages
+    if (tenant === 'base' && req.nextUrl.pathname !== '/sign-in' && req.nextUrl.pathname !== '/sign-up') {
+      const session = await auth();
+
+      if (session) {
+        // User is logged in on base domain, redirect to their company subdomain
+        const userCompanySubdomain = (session.user as any)?.companySubdomain;
+        const userRole = (session.user as any)?.role?.toLowerCase();
+
+        if (userCompanySubdomain) {
+          const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
+          return NextResponse.redirect(companyUrl);
+        }
+      }
+    }
+
     return NextResponse.next({
       request: { headers: requestHeaders },
     });
@@ -66,10 +83,10 @@ export default async function middleware(req: NextRequest) {
     const userRole = (session.user as any)?.role?.toLowerCase();
     const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
-    // Redirect based on role and company
-    if (userRole === 'admin' && userCompanySubdomain) {
-      // Redirect admin to their company subdomain
-      const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
+    // If user has a company subdomain, redirect them to their company subdomain
+    if (userCompanySubdomain && tenant === 'base') {
+      // User is logged in and on base domain, redirect to their company subdomain
+      const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
       return NextResponse.redirect(companyUrl);
     } else if (userRole === 'admin') {
       return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
@@ -114,8 +131,8 @@ export default async function middleware(req: NextRequest) {
     if (isEmployeeRoute && userRole !== 'employee') {
       // Admin trying to access employee routes, redirect to admin dashboard
       const userCompanySubdomain = (session.user as any)?.companySubdomain;
-      if (userRole === 'admin' && userCompanySubdomain) {
-        // Redirect admin to their company subdomain
+      if (userRole === 'admin' && userCompanySubdomain && tenant === 'base') {
+        // Redirect admin to their company subdomain if on base domain
         const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
         return NextResponse.redirect(companyUrl);
       } else {
