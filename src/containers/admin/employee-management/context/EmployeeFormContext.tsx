@@ -13,7 +13,7 @@ const FORM_STORAGE_KEY = 'employee_creation_form_data';
 export const MultiStepFormProvider = ({ children }: { children: React.ReactNode }) => {
   // Initialize form data with default values
   const initialFormData: MultiStepFormData = {
-    personalDetails: { employeeName: '', employeeRole: '', jobTitle: '', avatar: '', joiningDate: new Date() },
+    personalDetails: { employeeName: '', employeeRole: '', jobTitle: '', cnic: '', avatar: '', joiningDate: new Date() },
     accountDetails: { email: '', employeeId: '', machineId: '', password: '' },
     contactDetails: {
       contact: {
@@ -86,6 +86,7 @@ export const MultiStepFormProvider = ({ children }: { children: React.ReactNode 
       personalDetails: {
         employeeName: '',
         jobTitle: '',
+        cnic: '',
         avatar: '',
         employeeRole: 'Employee',
         joiningDate: new Date(),

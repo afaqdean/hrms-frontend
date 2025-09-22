@@ -34,6 +34,14 @@ export const personalDetailsSchema = z.object({
 
   employeeRole: z.string().min(1, 'Employee role is required').default('Employee'),
 
+  cnic: z
+    .string()
+    .min(13, { message: 'CNIC must be exactly 13 digits' })
+    .max(13, { message: 'CNIC must be exactly 13 digits' })
+    .regex(/^\d{13}$/, {
+      message: 'CNIC must contain only digits and be exactly 13 characters long',
+    }),
+
   avatar: z.union([
     z.string(),
     z.instanceof(File),

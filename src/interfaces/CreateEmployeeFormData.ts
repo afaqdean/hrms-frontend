@@ -11,6 +11,7 @@ export type CreateEmployeeFormData = {
   password: string;
   role: string;
   position?: string;
+  cnic: string;
   annualLeaveBank?: number;
   casualLeaveBank?: number;
   sickLeaveBank?: number;

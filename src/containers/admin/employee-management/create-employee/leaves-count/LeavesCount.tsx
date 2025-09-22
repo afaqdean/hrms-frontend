@@ -88,6 +88,7 @@ const LeavesCount: React.FC<LeavesCountProps> = ({
       formDataToSend.append('employeeID', formData.accountDetails.employeeId);
       formDataToSend.append('password', formData.accountDetails.password ?? '');
       formDataToSend.append('position', formData.personalDetails.jobTitle || '');
+      formDataToSend.append('cnic', formData.personalDetails.cnic || '');
       formDataToSend.append('annualLeaveBank', formData.leavesCountDetails.annualLeave?.toString() || '0');
       formDataToSend.append('casualLeaveBank', formData.leavesCountDetails.casualLeave?.toString() || '0');
       formDataToSend.append('sickLeaveBank', formData.leavesCountDetails.sickLeave?.toString() || '0');

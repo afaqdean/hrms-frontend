@@ -76,6 +76,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
       employeeName: '',
       employeeRole: 'Employee',
       jobTitle: '',
+      cnic: '',
       joiningDate: new Date(),
       avatar: '',
       originalFileName: '',
@@ -97,6 +98,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
           employeeName: dataToUse.name || '',
           employeeRole: dataToUse.role || 'Employee',
           jobTitle: dataToUse.position || '',
+          cnic: dataToUse.cnic || '',
           joiningDate: dataToUse.joiningDate ? new Date(dataToUse.joiningDate) : new Date(),
           avatar: dataToUse.profileImage || '',
         });
@@ -114,6 +116,7 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
       form.reset({
         employeeName: storedPersonalDetails.employeeName || '',
         jobTitle: storedPersonalDetails.jobTitle || '',
+        cnic: storedPersonalDetails.cnic || '',
         avatar: storedPersonalDetails.avatar || '',
         employeeRole: storedPersonalDetails.employeeRole || 'Employee',
         joiningDate: storedPersonalDetails.joiningDate || new Date(),
@@ -316,6 +319,27 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
                 </FormItem>
               )}
             />
+
+            {/* CNIC */}
+            <FormField
+              control={form.control}
+              name="cnic"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CNIC *</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="text-sm"
+                      placeholder="e.g., 1234567890123"
+                      maxLength={13}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* employeeRole */}
             <FormField
               control={form.control}

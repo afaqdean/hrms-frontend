@@ -10,6 +10,7 @@ const transformToCreateEmployeeData = (data: MultiStepFormData): CreateEmployeeF
   password: data.accountDetails.password ?? '',
   role: data.personalDetails.employeeRole,
   position: data.personalDetails.jobTitle,
+  cnic: data.personalDetails.cnic,
   annualLeaveBank: Number(data.leavesCountDetails.annualLeave) || 0,
   casualLeaveBank: Number(data.leavesCountDetails.casualLeave) || 0,
   sickLeaveBank: Number(data.leavesCountDetails.sickLeave) || 0,
