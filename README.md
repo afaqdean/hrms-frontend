@@ -1,7 +1,7 @@
 # Human Resource Management System (HRMS)
 
 ## 🚀 Introduction
-The Human Resource Management System (HRMS) is a comprehensive, enterprise-grade web application built with modern technologies to streamline and optimize HR operations for organizations of all sizes. This Next.js-powered platform offers a seamless experience for both employees and administrators, with a focus on performance, security, and user experience.
+The Human Resource Management System (HRMS) is a comprehensive, enterprise-grade web application built with modern technologies to streamline and optimize HR operations for organizations of all sizes. This Next.js-powered platform offers a seamless experience for both employees and administrators, with a focus on performance, security, and user experience
 
 Designed with scalability in mind, HRMS provides a robust solution for workforce management, time tracking, leave administration, and internal communications. The application leverages React 19's latest features, Next.js 15's App Router, and a PWA architecture to deliver a responsive, offline-capable experience across desktop and mobile devices.
 
