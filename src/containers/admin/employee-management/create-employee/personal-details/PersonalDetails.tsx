@@ -105,10 +105,10 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
     }
   }, [employeeData, initialData, mode, form, isFormInitialized]);
 
-  // Update form values for create mode when form data changes (only on initial load)
+  // Update form values for create mode when form data changes
   useEffect(() => {
-    if ((!mode || mode === 'create') && !isFormInitialized) {
-      // For create mode, load data from the context only on initial load
+    if (!mode || mode === 'create') {
+      // For create mode, load data from the context
       const storedPersonalDetails = formData.personalDetails;
 
       form.reset({
@@ -125,7 +125,10 @@ const PersonalDetails: React.FC<PersonalDetailsProps> = ({
         setRemoteImageUrl(storedPersonalDetails.avatar);
         setOriginalFileName(storedPersonalDetails.originalFileName || '');
       }
-      setIsFormInitialized(true);
+
+      if (!isFormInitialized) {
+        setIsFormInitialized(true);
+      }
     }
   }, [mode, formData.personalDetails, form, isFormInitialized]);
 
