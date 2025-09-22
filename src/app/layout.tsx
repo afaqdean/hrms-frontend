@@ -7,6 +7,7 @@ import ReactQueryWrapper from '@/components/ReactQueryWrapper';
 import StructuredData from '@/components/StructuredData';
 import { MultiStepFormProvider } from '@/containers/admin/employee-management/context/EmployeeFormContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { BrandingProvider } from '@/context/BrandingContext';
 import { LoadingProvider } from '@/context/LoadingContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { TenantProvider } from '@/context/TenantContext';
@@ -153,15 +154,17 @@ export default async function RootLayout(props: Readonly<{
                   <MultiStepFormProvider>
                     <ReactQueryWrapper>
                       <NotificationProvider>
-                        {props.children}
-                        <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+                        <BrandingProvider>
+                          {props.children}
+                          <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
 
-                        {/* Add structured data for better SEO */}
-                        <StructuredData type="Organization" />
-                        <StructuredData type="WebSite" />
+                          {/* Add structured data for better SEO */}
+                          <StructuredData type="Organization" />
+                          <StructuredData type="WebSite" />
 
-                        {/* Add the AuthErrorHandler for handling 401 errors */}
-                        <AuthErrorHandler />
+                          {/* Add the AuthErrorHandler for handling 401 errors */}
+                          <AuthErrorHandler />
+                        </BrandingProvider>
                       </NotificationProvider>
                     </ReactQueryWrapper>
                   </MultiStepFormProvider>

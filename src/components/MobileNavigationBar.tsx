@@ -5,10 +5,9 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useAuth } from '@/context/AuthContext';
 import { useLogout } from '@/hooks/useLogout';
 import clsx from 'clsx';
-import Image from 'next/image';
+import { Palette } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import huddleHRLogo from 'public/assets/huddle-image.png';
 import React, { useMemo, useState } from 'react';
 import { BiLogInCircle } from 'react-icons/bi';
 import { CiMoneyBill } from 'react-icons/ci';
@@ -17,6 +16,7 @@ import { IoDocumentTextOutline, IoMenu, IoSettingsOutline } from 'react-icons/io
 import { RiLogoutCircleLine } from 'react-icons/ri';
 import { WiTime4 } from 'react-icons/wi';
 import NotificationPanel from './NotificationPanel';
+import DynamicLogo from './shared/header/DynamicLogo';
 
 type NavLink = {
   text: string;
@@ -30,6 +30,7 @@ const ADMIN_MOBILE_LINKS: NavLink[] = [
   { text: 'Leaves Management', icon: GrNotes, path: '/dashboard/admin/leaves-management' },
   { text: 'Time Tracking', icon: WiTime4, path: '/dashboard/admin/time-tracking' },
   { text: 'Announcements', icon: GrAnnounce, path: '/dashboard/admin/announcements' },
+  { text: 'Branding', icon: Palette, path: '/dashboard/admin/branding' },
   { text: 'Settings', icon: IoSettingsOutline, path: '/dashboard/admin/profile-settings' },
   { text: 'Logout', icon: RiLogoutCircleLine, path: '/sign-in' },
 ] as const;
@@ -89,14 +90,11 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({ isAdmin }) =>
             <IoMenu size={26} />
           </SheetTrigger>
 
-          <Image
-            src={huddleHRLogo.src}
+          <DynamicLogo
             height={50}
             width={150}
             className="object-contain"
-            alt="HuddleHR Logo"
             onClick={() => router.push(getDashboardPath())} // Redirect based on role
-
           />
           <NotificationPanel />
         </div>
@@ -104,7 +102,7 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({ isAdmin }) =>
         <SheetContent side="left" className="w-72 bg-white px-4 py-10">
           {/* Logo */}
           <div className="my-3 flex justify-center">
-            <Image src={huddleHRLogo} height={100} width={100} alt="HR-logo" />
+            <DynamicLogo height={100} width={100} />
           </div>
 
           {/* Profile */}

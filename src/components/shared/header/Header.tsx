@@ -15,15 +15,14 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useLogout } from '@/hooks/useLogout';
 import { ChevronDown } from 'lucide-react';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import huddleHRLogo from 'public/assets/huddle-image.png';
 import React, { useState } from 'react';
 import { BsArrowUpRightCircle } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { IoMdLogOut, IoMdPerson } from 'react-icons/io';
 import { Button } from '../../ui/button';
 import Avatar from '../avatars/avatar/Avatar';
+import DynamicLogo from './DynamicLogo';
 
 /**
  * Header Component
@@ -48,12 +47,10 @@ const Header = () => {
   return (
     <div className="hidden w-full items-center justify-between pb-3 md:flex">
       {/* Left Section: Logo */}
-      <Image
-        src={huddleHRLogo.src} // Company logo image
+      <DynamicLogo
         height={50}
         width={150}
         className="cursor-pointer object-contain"
-        alt="HuddleHR Logo"
         onClick={() => router.push(getDashboardPath())} // Redirect based on role
       />
 

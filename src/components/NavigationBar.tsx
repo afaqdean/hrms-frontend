@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Palette } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -25,6 +26,7 @@ const ADMIN_LINKS: NavLink[] = [
   { text: 'Time Tracking', icon: WiTime4, path: '/dashboard/admin/time-tracking' },
   { text: 'Announcements', icon: IoMdMegaphone, path: '/dashboard/admin/announcements' },
   { text: 'Payroll Management', icon: CiMoneyBill, path: '/dashboard/admin/payroll-management' },
+  { text: 'Branding', icon: Palette, path: '/dashboard/admin/branding' },
 ] as const;
 
 const EMPLOYEE_LINKS: NavLink[] = [
