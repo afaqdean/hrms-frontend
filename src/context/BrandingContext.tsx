@@ -45,7 +45,7 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     root.style.setProperty('--background', hexToHsl(brandingData.backgroundColor));
 
     // Apply font family
-    root.style.setProperty('--font-family', brandingData.fontFamily);
+    root.style.setProperty('--font-family', `'${brandingData.fontFamily}', sans-serif`);
 
     // Apply logo if available
     if (brandingData.logoUrl) {
@@ -80,7 +80,7 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     root.style.setProperty('--primary', '0 0% 9%');
     root.style.setProperty('--secondary', '0 0% 96.1%');
     root.style.setProperty('--background', '0 0% 100%');
-    root.style.setProperty('--font-family', 'Poppins');
+    root.style.setProperty('--font-family', '\'Poppins\', sans-serif');
     root.style.removeProperty('--logo-url');
 
     // Reset favicon
@@ -98,6 +98,13 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
       applyBranding(branding);
     }
   }, [branding, isLoading, applyBranding]);
+
+  // Update current branding when the branding data changes
+  useEffect(() => {
+    if (branding && !isLoading) {
+      setCurrentBranding(branding);
+    }
+  }, [branding, isLoading]);
 
   const value: BrandingContextType = useMemo(() => ({
     branding: currentBranding,

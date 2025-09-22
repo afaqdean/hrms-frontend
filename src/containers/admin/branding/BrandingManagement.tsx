@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
+import { useBrandingContext } from '@/context/BrandingContext';
 import { useTenant } from '@/context/useTenant';
 import { useBranding } from '@/hooks/useBranding';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,7 +42,10 @@ const BrandingManagement: React.FC = () => {
     createBranding,
     updateBranding,
     isUpdating,
+    refetch,
   } = useBranding();
+
+  const { applyBranding } = useBrandingContext();
 
   const {
     register,
@@ -118,6 +122,27 @@ const BrandingManagement: React.FC = () => {
       } else {
         throw new Error('No company or user context available');
       }
+
+      // Refresh the branding data and apply it to the context
+      await refetch();
+
+      // Apply the new branding immediately
+      const newBranding = {
+        id: 'temp',
+        companyId: companyId || userData?.id || 'temp',
+        primaryColor: data.primaryColor,
+        secondaryColor: data.secondaryColor,
+        backgroundColor: data.backgroundColor,
+        logoUrl: data.logoUrl,
+        logoAltText: data.logoAltText,
+        faviconUrl: data.faviconUrl,
+        fontFamily: data.fontFamily,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      applyBranding(newBranding);
+
       toast.success('Branding updated successfully!');
     } catch (error) {
       toast.error('Failed to update branding. Please try again.');
