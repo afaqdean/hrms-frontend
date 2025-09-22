@@ -1,12 +1,8 @@
 'use client';
 
-import type { TenantContextType } from './tenant.types';
+import type { TenantContextType, TenantProviderProps } from '@/interfaces';
 import React, { useEffect, useMemo, useState } from 'react';
 import { TenantContext } from './tenant.context';
-
-type TenantProviderProps = {
-  children: React.ReactNode;
-};
 
 export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   const [tenant, setTenant] = useState<string | null>(null);

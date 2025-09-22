@@ -1,6 +1,3 @@
-export type TenantContextType = {
-  tenant: string | null;
-  tenantType: 'base' | 'company' | null;
-  companyId: string | null;
-  isLoading: boolean;
-};
+// This file is now deprecated - types moved to @/interfaces/Tenant
+// Keeping for backward compatibility, but should be removed after migration
+export type { TenantContextType } from '@/interfaces/Tenant';
