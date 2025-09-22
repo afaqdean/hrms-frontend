@@ -1,6 +1,6 @@
 {
   "name": "hrms",
-  "version": "0.1.107",
+  "version": "0.1.108",
   "author": "Code Huddle (https://github.com/Code-Huddle)",
   "scripts": {
     "dev:next": "next dev",
