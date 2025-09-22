@@ -11,9 +11,17 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
-  // Fetch company data when we have a company tenant
-  const { company, isLoading: companyLoading } = useCompanyData(companyId || undefined);
+  // Only use React Query hooks on the client side
+  const { company, isLoading: companyLoading } = useCompanyData(
+    isClient && companyId ? companyId : undefined,
+  );
+
+  // Set client-side flag
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const detectTenant = async () => {
@@ -99,9 +107,9 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
     tenantType,
     companyId: companyId === 'pending' ? null : companyId,
     company,
-    isLoading: isLoading || companyLoading,
+    isLoading: isLoading || (isClient && companyLoading),
     error,
-  }), [tenant, tenantType, companyId, company, isLoading, companyLoading, error]);
+  }), [tenant, tenantType, companyId, company, isLoading, isClient, companyLoading, error]);
 
   return (
     <TenantContext.Provider value={value}>

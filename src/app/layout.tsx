@@ -148,11 +148,11 @@ export default async function RootLayout(props: Readonly<{
         {/* Add this class */}
         <Suspense fallback={<div>Loading...</div>}>
           <SessionProvider>
-            <TenantProvider>
-              <AuthProvider>
-                <LoadingProvider>
-                  <MultiStepFormProvider>
-                    <ReactQueryWrapper>
+            <AuthProvider>
+              <LoadingProvider>
+                <MultiStepFormProvider>
+                  <ReactQueryWrapper>
+                    <TenantProvider>
                       <NotificationProvider>
                         <BrandingProvider>
                           {props.children}
@@ -166,11 +166,11 @@ export default async function RootLayout(props: Readonly<{
                           <AuthErrorHandler />
                         </BrandingProvider>
                       </NotificationProvider>
-                    </ReactQueryWrapper>
-                  </MultiStepFormProvider>
-                </LoadingProvider>
-              </AuthProvider>
-            </TenantProvider>
+                    </TenantProvider>
+                  </ReactQueryWrapper>
+                </MultiStepFormProvider>
+              </LoadingProvider>
+            </AuthProvider>
           </SessionProvider>
         </Suspense>
 
