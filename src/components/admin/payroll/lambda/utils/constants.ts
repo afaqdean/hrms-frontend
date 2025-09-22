@@ -1,5 +1,4 @@
-// Employee ID validation pattern (format: 37405-1234567-1)
-export const EMPLOYEE_ID_PATTERN = /^\d{5}-\d{7}-\d$/;
+// Employee ID validation - no specific format required
 
 // File upload configuration
 export const EXCEL_FILE_CONFIG = {

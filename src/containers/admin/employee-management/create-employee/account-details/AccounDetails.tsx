@@ -225,7 +225,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({
                   <FormControl>
                     <Input
                       className="max-md:text-sm"
-                      placeholder="Enter Employee-ID e.g (CH-PK-XXX)"
+                      placeholder="Enter Employee ID"
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);

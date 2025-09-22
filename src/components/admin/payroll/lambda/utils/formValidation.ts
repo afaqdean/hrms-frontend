@@ -1,14 +1,14 @@
 import type { BulkProcessingFiles, FormValidationResult, IndividualProcessingData } from '../types';
 import { toast } from 'react-toastify';
-import { EMPLOYEE_ID_PATTERN, ERROR_MESSAGES } from './constants';
+import { ERROR_MESSAGES } from './constants';
 
 /**
- * Validate employee ID format (37405-1234567-1)
+ * Validate employee ID (any non-empty string)
  * @param id - Employee ID to validate
  * @returns True if valid, false otherwise
  */
 export const validateEmployeeId = (id: string): boolean => {
-  return EMPLOYEE_ID_PATTERN.test(id);
+  return Boolean(id && id.trim().length > 0);
 };
 
 /**

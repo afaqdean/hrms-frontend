@@ -71,9 +71,7 @@ export type PersonalDetailsFormValues = z.infer<typeof personalDetailsSchema>;
 export const accountDetailsSchema = z.object({
   employeeId: z
     .string()
-    .regex(/^CH-PK-\d{3}$/, {
-      message: 'Employee ID must be in the format CH-PK-XXX (e.g., CH-PK-019)',
-    }),
+    .min(1, { message: 'Employee ID is required' }),
 
   machineId: z
     .string()
