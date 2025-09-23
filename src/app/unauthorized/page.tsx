@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, ArrowLeft, Clock } from 'lucide-react';
+import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 export default function UnauthorizedPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [countdown, setCountdown] = useState(10);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const userCompanySubdomain = (session?.user as any)?.companySubdomain;
@@ -19,30 +18,8 @@ export default function UnauthorizedPage() {
   useEffect(() => {
     if (!session) {
       router.push('/sign-in');
-      return;
     }
-
-    // Only start countdown if we have valid user data
-    if (userCompanySubdomain && userRole) {
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            setIsRedirecting(true);
-            // Redirect to user's correct company subdomain
-            const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
-            window.location.href = companyUrl;
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-
-    // Return undefined cleanup function if no timer is set
-    return undefined;
-  }, [session, userCompanySubdomain, userRole, router]);
+  }, [session, router]);
 
   const handleManualRedirect = () => {
     setIsRedirecting(true);
@@ -85,16 +62,8 @@ export default function UnauthorizedPage() {
               </span>
             </p>
             <p className="text-sm text-gray-500">
-              Redirecting you to your company's dashboard in:
+              Click the button below to go to your company's dashboard.
             </p>
-          </div>
-
-          <div className="flex items-center justify-center space-x-2">
-            <Clock className="size-4 text-gray-500" />
-            <span className="text-2xl font-bold text-blue-600">
-              {countdown}
-            </span>
-            <span className="text-sm text-gray-500">seconds</span>
           </div>
 
           {isRedirecting && (
@@ -112,7 +81,7 @@ export default function UnauthorizedPage() {
               className="flex-1"
               disabled={isRedirecting}
             >
-              Go to My Dashboard
+              {isRedirecting ? 'Redirecting...' : 'Go to My Company Dashboard'}
             </Button>
             <Button
               variant="outline"
