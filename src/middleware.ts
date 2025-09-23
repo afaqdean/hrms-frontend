@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { auth } from 'auth';
 import { NextResponse } from 'next/server';
 
-const publicPaths = ['/', '/sign-in', '/sign-up'];
+const publicPaths = ['/', '/sign-in', '/sign-up', '/unauthorized'];
 // Add service worker and PWA related paths
 const pwaFiles = ['/sw.js', '/offline.html', '/manifest.json', '/android-chrome-192x192.png', '/android-chrome-512x512.png'];
 
@@ -119,9 +119,6 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }
-
-  // Role-based route protection is handled by the layout files
-  // This prevents redirect loops between middleware and layout authentication
 
   // Continue with the request
   return NextResponse.next({

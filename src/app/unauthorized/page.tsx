@@ -22,24 +22,26 @@ export default function UnauthorizedPage() {
       return;
     }
 
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          setIsRedirecting(true);
-          // Redirect to user's correct company subdomain
-          if (userCompanySubdomain && userRole) {
+    // Only start countdown if we have valid user data
+    if (userCompanySubdomain && userRole) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            setIsRedirecting(true);
+            // Redirect to user's correct company subdomain
             const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
             window.location.href = companyUrl;
-          } else {
-            router.push('/dashboard');
+            return 0;
           }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+          return prev - 1;
+        });
+      }, 1000);
 
-    return () => clearInterval(timer);
+      return () => clearInterval(timer);
+    }
+
+    // Return undefined cleanup function if no timer is set
+    return undefined;
   }, [session, userCompanySubdomain, userRole, router]);
 
   const handleManualRedirect = () => {
@@ -47,8 +49,6 @@ export default function UnauthorizedPage() {
     if (userCompanySubdomain && userRole) {
       const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
       window.location.href = companyUrl;
-    } else {
-      router.push('/dashboard');
     }
   };
 
