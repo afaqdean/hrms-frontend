@@ -82,9 +82,10 @@ export default async function middleware(req: NextRequest) {
       const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
       // If user is on a company subdomain but doesn't belong to it
-      if (tenant !== 'base' && userCompanySubdomain && userCompanySubdomain !== tenant) {
+      // AND they're not already on the unauthorized page
+      if (tenant !== 'base' && userCompanySubdomain && userCompanySubdomain !== tenant && req.nextUrl.pathname !== '/unauthorized') {
         // User is trying to access a different company's subdomain/resources
-        // Redirect them to unauthorized page with countdown
+        // Redirect them to unauthorized page
         return NextResponse.redirect(new URL('/unauthorized', req.url));
       }
     }
