@@ -24,9 +24,9 @@ export async function protectRoute(allowedRoles: UserRole[]) {
   // Get user role
   const userRole = (session.user as any)?.role?.toLowerCase() as UserRole;
 
-  // Check role permissions
+  // Check role permissions - only redirect if user has a valid role but wrong permissions
   if (!hasRole(session, allowedRoles)) {
-    // Redirect to appropriate dashboard based on user role
+    // Only redirect if user has a valid role but is accessing wrong route
     if (userRole === ROLES.ADMIN) {
       redirect('/dashboard/admin/overview');
     } else if (userRole === ROLES.EMPLOYEE) {

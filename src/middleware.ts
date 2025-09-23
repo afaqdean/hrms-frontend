@@ -7,8 +7,6 @@ const publicPaths = ['/', '/sign-in', '/sign-up'];
 const pwaFiles = ['/sw.js', '/offline.html', '/manifest.json', '/android-chrome-192x192.png', '/android-chrome-512x512.png'];
 
 // Define protected route patterns
-const adminRoutePattern = /^\/dashboard\/admin/;
-const employeeRoutePattern = /^\/dashboard\/employee/;
 const dashboardRootPattern = /^\/dashboard\/?$/;
 
 export default async function middleware(req: NextRequest) {
@@ -122,48 +120,8 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  // Check if it's a protected role-based route
-  const isAdminRoute = adminRoutePattern.test(req.nextUrl.pathname);
-  const isEmployeeRoute = employeeRoutePattern.test(req.nextUrl.pathname);
-
-  if (isAdminRoute || isEmployeeRoute) {
-    // Get the session
-    const session = await auth();
-
-    // If no session, redirect to sign-in
-    if (!session) {
-      const callbackUrl = encodeURIComponent(req.nextUrl.href);
-      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, req.url));
-    }
-
-    // Get user role and company subdomain from session
-    const userRole = (session.user as any)?.role?.toLowerCase();
-    const userCompanySubdomain = (session.user as any)?.companySubdomain;
-
-    // Check role-based access
-    if (!userRole) {
-      // No role defined, redirect to sign-in
-      return NextResponse.redirect(new URL('/sign-in', req.url));
-    }
-
-    // Enforce admin-only routes
-    if (isAdminRoute && userRole !== 'admin') {
-      // Not an admin, redirect to employee dashboard
-      return NextResponse.redirect(new URL('/dashboard/employee/overview', req.url));
-    }
-
-    // Enforce employee-only routes
-    if (isEmployeeRoute && userRole !== 'employee') {
-      // Admin trying to access employee routes, redirect to admin dashboard
-      if (userRole === 'admin' && userCompanySubdomain && tenant === 'base') {
-        // Redirect admin to their company subdomain if on base domain
-        const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
-        return NextResponse.redirect(companyUrl);
-      } else {
-        return NextResponse.redirect(new URL('/dashboard/admin/overview', req.url));
-      }
-    }
-  }
+  // Role-based route protection is handled by the layout files
+  // This prevents redirect loops between middleware and layout authentication
 
   // Continue with the request
   return NextResponse.next({
