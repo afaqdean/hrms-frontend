@@ -24,7 +24,13 @@ export default async function middleware(req: NextRequest) {
 
   if (hostParts.length >= 3) {
     // For subdomain.hr-ify.com
-    tenant = hostParts[0] || '';
+    const subdomain = hostParts[0] || '';
+    // Special handling for www - treat it as base domain
+    if (subdomain === 'www') {
+      tenant = 'base';
+    } else {
+      tenant = subdomain;
+    }
   } else if (hostParts.length === 2) {
     // For hr-ify.com (base domain)
     tenant = 'base';
