@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
-import { useBrandingContext } from '@/context/BrandingContext';
 import { useTenant } from '@/context/useTenant';
 import { useBranding } from '@/hooks/useBranding';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,13 +18,13 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 const brandingSchema = z.object({
-  primaryColor: z.string().min(1, 'Primary color is required'),
-  secondaryColor: z.string().min(1, 'Secondary color is required'),
-  backgroundColor: z.string().min(1, 'Background color is required'),
+  primaryColor: z.string().optional(),
+  secondaryColor: z.string().optional(),
+  backgroundColor: z.string().optional(),
   logoUrl: z.string().url().optional().or(z.literal('')),
   logoAltText: z.string().optional(),
   faviconUrl: z.string().url().optional().or(z.literal('')),
-  fontFamily: z.string().min(1, 'Font family is required'),
+  fontFamily: z.string().optional(),
 });
 
 type BrandingFormData = z.infer<typeof brandingSchema>;
@@ -44,8 +43,6 @@ const BrandingManagement: React.FC = () => {
     isUpdating,
     refetch,
   } = useBranding();
-
-  const { applyBranding } = useBrandingContext();
 
   const {
     register,
@@ -91,33 +88,36 @@ const BrandingManagement: React.FC = () => {
 
   const onSubmit = async (data: BrandingFormData) => {
     try {
+      // Filter out empty values and prepare the data for submission
+      const submitData = {
+        primaryColor: data.primaryColor || '#11121A',
+        secondaryColor: data.secondaryColor || '#F4F5F7',
+        backgroundColor: data.backgroundColor || '#FFFFFF',
+        fontFamily: data.fontFamily || 'Poppins',
+        logoUrl: data.logoUrl || undefined,
+        logoAltText: data.logoAltText || undefined,
+        faviconUrl: data.faviconUrl || undefined,
+      };
+
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
         try {
           await updateBranding({
             companyId,
-            updateData: {
-              ...data,
-              logoUrl: data.logoUrl || undefined,
-              faviconUrl: data.faviconUrl || undefined,
-            },
+            updateData: submitData,
           });
         } catch {
           // If update fails, try to create new branding
           await createBranding({
             companyId,
-            ...data,
-            logoUrl: data.logoUrl || undefined,
-            faviconUrl: data.faviconUrl || undefined,
+            ...submitData,
           });
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
         await createBranding({
           companyId: userData.id,
-          ...data,
-          logoUrl: data.logoUrl || undefined,
-          faviconUrl: data.faviconUrl || undefined,
+          ...submitData,
         });
       } else {
         throw new Error('No company or user context available');
@@ -125,23 +125,6 @@ const BrandingManagement: React.FC = () => {
 
       // Refresh the branding data and apply it to the context
       await refetch();
-
-      // Apply the new branding immediately
-      const newBranding = {
-        id: 'temp',
-        companyId: companyId || userData?.id || 'temp',
-        primaryColor: data.primaryColor,
-        secondaryColor: data.secondaryColor,
-        backgroundColor: data.backgroundColor,
-        logoUrl: data.logoUrl,
-        logoAltText: data.logoAltText,
-        faviconUrl: data.faviconUrl,
-        fontFamily: data.fontFamily,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      applyBranding(newBranding);
 
       toast.success('Branding updated successfully!');
     } catch (error) {

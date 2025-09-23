@@ -96,15 +96,12 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
   useEffect(() => {
     if (branding && !isLoading) {
       applyBranding(branding);
-    }
-  }, [branding, isLoading, applyBranding]);
-
-  // Update current branding when the branding data changes
-  useEffect(() => {
-    if (branding && !isLoading) {
       setCurrentBranding(branding);
+    } else if (!branding && !isLoading) {
+      // Reset to default when no branding is found
+      resetToDefault();
     }
-  }, [branding, isLoading]);
+  }, [branding, isLoading, applyBranding, resetToDefault]);
 
   const value: BrandingContextType = useMemo(() => ({
     branding: currentBranding,

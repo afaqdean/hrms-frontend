@@ -31,7 +31,7 @@ export const useBranding = () => {
     mutationFn: (createBrandingDto: CreateCompanyBrandingDto) =>
       brandingApi.createBranding(createBrandingDto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['branding'] });
+      queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
     },
   });
 
@@ -40,7 +40,7 @@ export const useBranding = () => {
     mutationFn: ({ companyId, updateData }: { companyId: string; updateData: UpdateCompanyBrandingDto }) =>
       brandingApi.updateBranding(companyId, updateData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['branding'] });
+      queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
     },
   });
 
@@ -48,7 +48,7 @@ export const useBranding = () => {
   const deleteBrandingMutation = useMutation({
     mutationFn: (companyId: string) => brandingApi.deleteBranding(companyId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['branding'] });
+      queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
     },
   });
 
