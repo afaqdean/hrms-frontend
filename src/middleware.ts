@@ -43,6 +43,21 @@ export default async function middleware(req: NextRequest) {
   const publicPathnameRegex = new RegExp(`^(?:${publicPaths.join('|')})?/?$`, 'i');
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
+  // GLOBAL SECURITY CHECK: For ANY page (public or private), validate user belongs to current subdomain
+  // This catches ALL attempts to access other company's URLs/resources
+  const session = await auth();
+  if (session && session.user) {
+    const userCompanySubdomain = (session.user as any)?.companySubdomain;
+
+    // If user is on a company subdomain but doesn't belong to it
+    // AND they're not already on the unauthorized page
+    if (tenant !== 'base' && userCompanySubdomain && userCompanySubdomain !== tenant && req.nextUrl.pathname !== '/unauthorized') {
+      // User is trying to access a different company's subdomain/resources
+      // Redirect them to unauthorized page
+      return NextResponse.redirect(new URL('/unauthorized', req.url));
+    }
+  }
+
   // If it's a public page, check if user is logged in and should be redirected to their company
   if (isPublicPage) {
     // Handle root path redirect to sign-in
@@ -52,8 +67,6 @@ export default async function middleware(req: NextRequest) {
 
     // Only check for redirect if user is on base domain and not on sign-in/sign-up pages
     if (tenant === 'base' && req.nextUrl.pathname !== '/sign-in' && req.nextUrl.pathname !== '/sign-up') {
-      const session = await auth();
-
       // Only redirect if user is actually logged in AND has a valid session
       if (session && session.user && (session.user as any)?.companySubdomain) {
         // User is logged in on base domain, redirect to their company subdomain
@@ -72,31 +85,9 @@ export default async function middleware(req: NextRequest) {
     });
   }
 
-  // GLOBAL SECURITY CHECK: For any non-public page, validate user belongs to current subdomain
-  // This catches ALL attempts to access other company's URLs/resources
-  if (!isPublicPage) {
-    const session = await auth();
-
-    // Only check if user is authenticated
-    if (session && session.user) {
-      const userCompanySubdomain = (session.user as any)?.companySubdomain;
-
-      // If user is on a company subdomain but doesn't belong to it
-      // AND they're not already on the unauthorized page
-      if (tenant !== 'base' && userCompanySubdomain && userCompanySubdomain !== tenant && req.nextUrl.pathname !== '/unauthorized') {
-        // User is trying to access a different company's subdomain/resources
-        // Redirect them to unauthorized page
-        return NextResponse.redirect(new URL('/unauthorized', req.url));
-      }
-    }
-  }
-
   // Check if it's the dashboard root path that needs redirection
   const isDashboardRoot = dashboardRootPattern.test(req.nextUrl.pathname);
   if (isDashboardRoot) {
-    // Get the session to determine user role
-    const session = await auth();
-
     // If no session, redirect to sign-in
     if (!session) {
       return NextResponse.redirect(new URL('/sign-in', req.url));
