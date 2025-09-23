@@ -73,7 +73,8 @@ export default async function middleware(req: NextRequest) {
         const userCompanySubdomain = (session.user as any)?.companySubdomain;
         const userRole = (session.user as any)?.role?.toLowerCase();
 
-        if (userCompanySubdomain && userRole) {
+        // Special handling for default company - they should stay on base domain
+        if (userCompanySubdomain && userCompanySubdomain !== 'default' && userRole) {
           const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
           return NextResponse.redirect(companyUrl);
         }
@@ -98,7 +99,8 @@ export default async function middleware(req: NextRequest) {
     const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
     // If user has a company subdomain and is on base domain, redirect them to their company subdomain
-    if (userCompanySubdomain && tenant === 'base') {
+    // Special handling for default company - they should stay on base domain
+    if (userCompanySubdomain && userCompanySubdomain !== 'default' && tenant === 'base') {
       // User is logged in and on base domain, redirect to their company subdomain
       const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
       return NextResponse.redirect(companyUrl);
