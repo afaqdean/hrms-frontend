@@ -242,11 +242,17 @@ const BrandingManagement: React.FC = () => {
                         type="color"
                         {...register('primaryColor')}
                         className="h-10 w-16 rounded border p-1"
+                        onChange={(e) => {
+                          setValue('primaryColor', e.target.value);
+                        }}
                       />
                       <Input
                         {...register('primaryColor')}
                         placeholder="#11121A"
                         className="flex-1"
+                        onChange={(e) => {
+                          setValue('primaryColor', e.target.value);
+                        }}
                       />
                     </div>
                     {errors.primaryColor && (
@@ -262,11 +268,17 @@ const BrandingManagement: React.FC = () => {
                         type="color"
                         {...register('secondaryColor')}
                         className="h-10 w-16 rounded border p-1"
+                        onChange={(e) => {
+                          setValue('secondaryColor', e.target.value);
+                        }}
                       />
                       <Input
                         {...register('secondaryColor')}
                         placeholder="#F4F5F7"
                         className="flex-1"
+                        onChange={(e) => {
+                          setValue('secondaryColor', e.target.value);
+                        }}
                       />
                     </div>
                     {errors.secondaryColor && (
@@ -282,11 +294,17 @@ const BrandingManagement: React.FC = () => {
                         type="color"
                         {...register('backgroundColor')}
                         className="h-10 w-16 rounded border p-1"
+                        onChange={(e) => {
+                          setValue('backgroundColor', e.target.value);
+                        }}
                       />
                       <Input
                         {...register('backgroundColor')}
                         placeholder="#FFFFFF"
                         className="flex-1"
+                        onChange={(e) => {
+                          setValue('backgroundColor', e.target.value);
+                        }}
                       />
                     </div>
                     {errors.backgroundColor && (
@@ -429,7 +447,7 @@ const BrandingManagement: React.FC = () => {
                             alt={watchedValues.logoAltText || 'Company Logo'}
                             width={48}
                             height={48}
-                            className="h-12 w-auto"
+                            className="h-12 w-auto max-w-32 object-contain"
                           />
                         )}
                         <h2 className="text-2xl font-bold">Your Company Name</h2>

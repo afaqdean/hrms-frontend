@@ -68,8 +68,8 @@ const NavItem: React.FC<NavItemProps> = ({ link, isActive }) => {
         <div
           className={`absolute inset-0 rounded-full transition-colors duration-300 ${
             isActive
-              ? 'bg-primary-100'
-              : 'bg-white group-hover:bg-primary-100/90'
+              ? 'bg-primary'
+              : 'bg-background group-hover:bg-primary/90'
           }`}
         />
 
@@ -79,16 +79,16 @@ const NavItem: React.FC<NavItemProps> = ({ link, isActive }) => {
             size={iconSize}
             className={`shrink-0 transition-colors duration-300 ${
               isActive
-                ? 'text-white'
-                : 'text-gray-600 group-hover:text-white'
+                ? 'text-primary-foreground'
+                : 'text-foreground group-hover:text-primary-foreground'
             }`}
             aria-hidden="true"
           />
           <span
             className={`${textSize} font-medium transition-colors duration-300 ${
               isActive
-                ? 'text-white'
-                : 'text-gray-800 group-hover:text-white'
+                ? 'text-primary-foreground'
+                : 'text-foreground group-hover:text-primary-foreground'
             }`}
           >
             {link.text}

@@ -20,6 +20,7 @@ type UnsafeUnwrappedCookies = {
       maxAge?: number;
       path?: string;
       sameSite?: 'strict' | 'lax' | 'none';
+      domain?: string;
     }
   ) => void;
 };
@@ -65,6 +66,37 @@ const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || 'https://code-huddle-hrms-d
 
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET || 'HRMS-SECRETS',
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+  },
 
   providers: [
     GitHub({
@@ -207,6 +239,7 @@ export const authConfig: NextAuthConfig = {
             maxAge: user.tokenExpires,
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Set user role cookie
@@ -216,6 +249,7 @@ export const authConfig: NextAuthConfig = {
             maxAge: user.tokenExpires,
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Set user data cookie
@@ -237,6 +271,7 @@ export const authConfig: NextAuthConfig = {
             maxAge: user.tokenExpires,
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Also update localStorage if we're in the browser
@@ -283,9 +318,21 @@ export const authConfig: NextAuthConfig = {
         }
 
         // Clear all auth-related cookies
-        cookieStore.set('token', '', { maxAge: -1, path: '/' });
-        cookieStore.set('userRole', '', { maxAge: -1, path: '/' });
-        cookieStore.set('userData', '', { maxAge: -1, path: '/' });
+        cookieStore.set('token', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
+        cookieStore.set('userRole', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
+        cookieStore.set('userData', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
       } catch (error) {
         console.error('Error clearing cookies in signOut event:', error);
       }
@@ -322,6 +369,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
         maxAge: 24 * 60 * 60, // 24 hours in seconds
         path: '/',
         sameSite: 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
       });
     } catch (error) {
       console.error('Error updating cookies in refreshAccessToken:', error);

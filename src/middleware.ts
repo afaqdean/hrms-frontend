@@ -47,16 +47,22 @@ export default async function middleware(req: NextRequest) {
 
   // If it's a public page, check if user is logged in and should be redirected to their company
   if (isPublicPage) {
+    // Handle root path redirect to sign-in
+    if (tenant === 'base' && req.nextUrl.pathname === '/') {
+      return NextResponse.redirect(new URL('/sign-in', req.url));
+    }
+
     // Only check for redirect if user is on base domain and not on sign-in/sign-up pages
     if (tenant === 'base' && req.nextUrl.pathname !== '/sign-in' && req.nextUrl.pathname !== '/sign-up') {
       const session = await auth();
 
-      if (session) {
+      // Only redirect if user is actually logged in AND has a valid session
+      if (session && session.user && (session.user as any)?.companySubdomain) {
         // User is logged in on base domain, redirect to their company subdomain
         const userCompanySubdomain = (session.user as any)?.companySubdomain;
         const userRole = (session.user as any)?.role?.toLowerCase();
 
-        if (userCompanySubdomain) {
+        if (userCompanySubdomain && userRole) {
           const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/${userRole}/overview`;
           return NextResponse.redirect(companyUrl);
         }
@@ -66,6 +72,24 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next({
       request: { headers: requestHeaders },
     });
+  }
+
+  // GLOBAL SECURITY CHECK: For any non-public page, validate user belongs to current subdomain
+  // This catches ALL attempts to access other company's URLs/resources
+  if (!isPublicPage) {
+    const session = await auth();
+
+    // Only check if user is authenticated
+    if (session && session.user) {
+      const userCompanySubdomain = (session.user as any)?.companySubdomain;
+
+      // If user is on a company subdomain but doesn't belong to it
+      if (tenant !== 'base' && userCompanySubdomain && userCompanySubdomain !== tenant) {
+        // User is trying to access a different company's subdomain/resources
+        // Redirect them to unauthorized page with countdown
+        return NextResponse.redirect(new URL('/unauthorized', req.url));
+      }
+    }
   }
 
   // Check if it's the dashboard root path that needs redirection
@@ -112,8 +136,9 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, req.url));
     }
 
-    // Get user role from session
+    // Get user role and company subdomain from session
     const userRole = (session.user as any)?.role?.toLowerCase();
+    const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
     // Check role-based access
     if (!userRole) {
@@ -130,7 +155,6 @@ export default async function middleware(req: NextRequest) {
     // Enforce employee-only routes
     if (isEmployeeRoute && userRole !== 'employee') {
       // Admin trying to access employee routes, redirect to admin dashboard
-      const userCompanySubdomain = (session.user as any)?.companySubdomain;
       if (userRole === 'admin' && userCompanySubdomain && tenant === 'base') {
         // Redirect admin to their company subdomain if on base domain
         const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;

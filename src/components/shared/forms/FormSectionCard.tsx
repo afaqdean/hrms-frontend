@@ -15,13 +15,13 @@ const FormSectionCard: React.FC<FormSectionCardProps> = ({
   description,
 }) => {
   return (
-    <Card className={`bg-white shadow ${className}`}>
+    <Card className={`bg-card shadow ${className}`}>
       <CardHeader>
-        <CardTitle className="text-lg font-medium text-gray-900">
+        <CardTitle className="text-lg font-medium text-card-foreground">
           {title}
         </CardTitle>
         {description && (
-          <p className="mt-1 text-sm text-gray-600">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         )}
       </CardHeader>
       <CardContent>
