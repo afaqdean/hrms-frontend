@@ -1,6 +1,6 @@
 'use client';
 
-import { useBrandingContext } from '@/context/BrandingContext';
+import { useBrandingContext } from '@/context/useBrandingContext';
 import Image from 'next/image';
 import huddleHRLogo from 'public/assets/huddle-image.png';
 import React from 'react';

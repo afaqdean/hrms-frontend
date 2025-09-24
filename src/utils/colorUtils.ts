@@ -8,6 +8,18 @@
  * @returns HSL color string (e.g., "0 100% 50%")
  */
 export const hexToHsl = (hex: string): string => {
+  // Validate hex color format
+  if (!hex || typeof hex !== 'string') {
+    console.error('Invalid hex color: must be a string', hex);
+    return '0 0% 0%'; // Default black
+  }
+
+  // Check if hex starts with # and has 6 characters after #
+  if (!/^#[0-9A-F]{6}$/i.test(hex)) {
+    console.error('Invalid hex color format:', hex);
+    return '0 0% 0%'; // Default black
+  }
+
   const r = Number.parseInt(hex.slice(1, 3), 16) / 255;
   const g = Number.parseInt(hex.slice(3, 5), 16) / 255;
   const b = Number.parseInt(hex.slice(5, 7), 16) / 255;

@@ -1,27 +1,10 @@
 'use client';
 
 import type { CompanyBranding } from '../interfaces/CompanyBranding';
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBranding } from '../hooks/useBranding';
 import { hexToHsl } from '../utils/colorUtils';
-
-type BrandingContextType = {
-  branding: CompanyBranding | null;
-  isLoading: boolean;
-  error: any;
-  applyBranding: (branding: CompanyBranding) => void;
-  resetToDefault: () => void;
-};
-
-const BrandingContext = createContext<BrandingContextType | undefined>(undefined);
-
-export const useBrandingContext = () => {
-  const context = useContext(BrandingContext);
-  if (!context) {
-    throw new Error('useBrandingContext must be used within a BrandingProvider');
-  }
-  return context;
-};
+import { BrandingContext, type BrandingContextType } from './BrandingContext.types';
 
 type BrandingProviderProps = {
   children: React.ReactNode;
@@ -65,8 +48,47 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
       }
     }
 
+    // Save to localStorage for persistence
+    try {
+      localStorage.setItem('branding', JSON.stringify(brandingData));
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Saved branding to localStorage:', brandingData);
+      }
+    } catch (error) {
+      console.error('Error saving branding to localStorage:', error);
+      // Show user notification about storage issue
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('branding-storage-error', {
+          detail: { message: 'Unable to save branding preferences locally. Your changes will be lost on page refresh.' },
+        }));
+      }
+    }
+
     setCurrentBranding(brandingData);
   }, []);
+
+  // Load branding from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedBranding = localStorage.getItem('branding');
+      if (savedBranding) {
+        try {
+          const parsedBranding = JSON.parse(savedBranding);
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Loading saved branding from localStorage:', parsedBranding);
+          }
+          // Only apply if we don't have current branding yet (avoid race condition)
+          if (!currentBranding) {
+            applyBranding(parsedBranding);
+            setCurrentBranding(parsedBranding);
+          }
+        } catch (error) {
+          console.error('Error parsing saved branding:', error);
+          localStorage.removeItem('branding');
+        }
+      }
+    }
+  }, [applyBranding, currentBranding]);
 
   // Reset to default branding
   const resetToDefault = useCallback(() => {
@@ -89,19 +111,58 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
       favicon.href = '/favicon.ico';
     }
 
+    // Clear localStorage
+    try {
+      localStorage.removeItem('branding');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Cleared branding from localStorage');
+      }
+    } catch (error) {
+      console.error('Error clearing branding from localStorage:', error);
+    }
+
     setCurrentBranding(null);
   }, []);
 
   // Apply branding when it changes
   useEffect(() => {
     if (branding && !isLoading) {
-      applyBranding(branding);
-      setCurrentBranding(branding);
-    } else if (!branding && !isLoading) {
+      // Only apply if it's different from current branding to avoid unnecessary updates
+      const isDifferent = !currentBranding
+        || currentBranding.primaryColor !== branding.primaryColor
+        || currentBranding.secondaryColor !== branding.secondaryColor
+        || currentBranding.backgroundColor !== branding.backgroundColor
+        || currentBranding.fontFamily !== branding.fontFamily
+        || currentBranding.logoUrl !== branding.logoUrl
+        || currentBranding.faviconUrl !== branding.faviconUrl;
+
+      if (isDifferent) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Applying branding:', branding);
+        }
+        applyBranding(branding);
+        setCurrentBranding(branding);
+      }
+    } else if (!branding && !isLoading && currentBranding) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('No branding found, resetting to default');
+      }
       // Reset to default when no branding is found
       resetToDefault();
     }
-  }, [branding, isLoading, applyBranding, resetToDefault]);
+  }, [branding, isLoading, applyBranding, resetToDefault, currentBranding]);
+
+  // Debug logging for branding state changes
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Branding state changed:', {
+        branding,
+        isLoading,
+        error,
+        currentBranding,
+      });
+    }
+  }, [branding, isLoading, error, currentBranding]);
 
   const value: BrandingContextType = useMemo(() => ({
     branding: currentBranding,

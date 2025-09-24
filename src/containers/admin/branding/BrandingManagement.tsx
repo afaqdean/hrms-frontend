@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/context/AuthContext';
+import { useBrandingContext } from '@/context/useBrandingContext';
 import { useTenant } from '@/context/useTenant';
 import { useBranding } from '@/hooks/useBranding';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -44,13 +45,28 @@ const BrandingManagement: React.FC = () => {
     refetch,
   } = useBranding();
 
+  const { applyBranding } = useBrandingContext();
+
+  // Listen for localStorage errors
+  React.useEffect(() => {
+    const handleStorageError = (event: CustomEvent) => {
+      toast.warn(event.detail.message);
+    };
+
+    window.addEventListener('branding-storage-error', handleStorageError as EventListener);
+
+    return () => {
+      window.removeEventListener('branding-storage-error', handleStorageError as EventListener);
+    };
+  }, []);
+
   const {
     register,
     handleSubmit,
     watch,
     setValue,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<BrandingFormData>({
     resolver: zodResolver(brandingSchema),
     defaultValues: {
@@ -63,6 +79,31 @@ const BrandingManagement: React.FC = () => {
 
   // Watch form values for live preview
   const watchedValues = watch();
+
+  // Default values for comparison
+  const defaultValues = {
+    primaryColor: '#11121A',
+    secondaryColor: '#F4F5F7',
+    backgroundColor: '#FFFFFF',
+    fontFamily: 'Poppins',
+    logoUrl: '',
+    logoAltText: '',
+    faviconUrl: '',
+  };
+
+  // Check if any field has changed from default values
+  const hasChanges = React.useMemo(() => {
+    const currentValues = watchedValues;
+    return (
+      currentValues.primaryColor !== defaultValues.primaryColor
+      || currentValues.secondaryColor !== defaultValues.secondaryColor
+      || currentValues.backgroundColor !== defaultValues.backgroundColor
+      || currentValues.fontFamily !== defaultValues.fontFamily
+      || (currentValues.logoUrl && currentValues.logoUrl !== '')
+      || (currentValues.logoAltText && currentValues.logoAltText !== '')
+      || (currentValues.faviconUrl && currentValues.faviconUrl !== '')
+    );
+  }, [watchedValues]);
 
   // Reset form when branding data loads
   React.useEffect(() => {
@@ -123,8 +164,36 @@ const BrandingManagement: React.FC = () => {
         throw new Error('No company or user context available');
       }
 
+      // Apply branding immediately to provide instant feedback
+      const brandingToApply = {
+        id: 'temp',
+        companyId: companyId || userData?.id || 'temp',
+        primaryColor: submitData.primaryColor,
+        secondaryColor: submitData.secondaryColor,
+        backgroundColor: submitData.backgroundColor,
+        logoUrl: submitData.logoUrl,
+        logoAltText: submitData.logoAltText,
+        faviconUrl: submitData.faviconUrl,
+        fontFamily: submitData.fontFamily,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Apply branding immediately for instant visual feedback
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Applying branding immediately:', brandingToApply);
+      }
+      applyBranding(brandingToApply);
+
       // Refresh the branding data and apply it to the context
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Refreshing branding data...');
+      }
       await refetch();
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Branding data refreshed');
+      }
 
       toast.success('Branding updated successfully!');
     } catch (error) {
@@ -134,17 +203,17 @@ const BrandingManagement: React.FC = () => {
   };
 
   const handleReset = () => {
-    if (branding) {
-      reset({
-        primaryColor: branding.primaryColor,
-        secondaryColor: branding.secondaryColor,
-        backgroundColor: branding.backgroundColor,
-        logoUrl: branding.logoUrl || '',
-        logoAltText: branding.logoAltText || '',
-        faviconUrl: branding.faviconUrl || '',
-        fontFamily: branding.fontFamily,
-      });
-    }
+    reset({
+      primaryColor: defaultValues.primaryColor,
+      secondaryColor: defaultValues.secondaryColor,
+      backgroundColor: defaultValues.backgroundColor,
+      logoUrl: defaultValues.logoUrl,
+      logoAltText: defaultValues.logoAltText,
+      faviconUrl: defaultValues.faviconUrl,
+      fontFamily: defaultValues.fontFamily,
+    });
+    setLogoPreview('');
+    setFaviconPreview('');
   };
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -482,13 +551,13 @@ const BrandingManagement: React.FC = () => {
             type="button"
             variant="outline"
             onClick={handleReset}
-            disabled={!isDirty || isUpdating}
+            disabled={!hasChanges || isUpdating}
           >
             Reset
           </Button>
           <Button
             type="submit"
-            disabled={!isDirty || isUpdating}
+            disabled={!hasChanges || isUpdating}
             className="flex items-center gap-2"
           >
             {isUpdating

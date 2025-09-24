@@ -1,12 +1,10 @@
 import type { CreateCompanyBrandingDto, UpdateCompanyBrandingDto } from '../interfaces/CompanyBranding';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useSession } from 'next-auth/react';
 import { useTenant } from '../context/useTenant';
 import { brandingApi } from '../services/brandingApi';
 
 export const useBranding = () => {
   const { tenant, tenantType } = useTenant();
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
 
   // Get branding based on tenant type
@@ -24,16 +22,22 @@ export const useBranding = () => {
         return await brandingApi.getDefaultBranding();
       }
     },
-    enabled: (!!tenant || tenantType === 'base') && !!session && !!session.user,
+    enabled: (!!tenant || tenantType === 'base'),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3,
+    retryDelay: 1000,
   });
 
   // Create branding mutation
   const createBrandingMutation = useMutation({
     mutationFn: (createBrandingDto: CreateCompanyBrandingDto) =>
       brandingApi.createBranding(createBrandingDto),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.warn('Create branding mutation success:', data);
       queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
+    },
+    onError: (error) => {
+      console.error('Create branding mutation error:', error);
     },
   });
 
@@ -41,8 +45,12 @@ export const useBranding = () => {
   const updateBrandingMutation = useMutation({
     mutationFn: ({ companyId, updateData }: { companyId: string; updateData: UpdateCompanyBrandingDto }) =>
       brandingApi.updateBranding(companyId, updateData),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.warn('Update branding mutation success:', data);
       queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
+    },
+    onError: (error) => {
+      console.error('Update branding mutation error:', error);
     },
   });
 

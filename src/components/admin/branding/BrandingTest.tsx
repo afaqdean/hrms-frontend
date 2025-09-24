@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBrandingContext } from '@/context/BrandingContext';
+import { useBrandingContext } from '@/context/useBrandingContext';
 import React from 'react';
 
 const BrandingTest: React.FC = () => {
