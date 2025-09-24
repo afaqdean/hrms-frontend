@@ -52,6 +52,8 @@ export default async function middleware(req: NextRequest) {
   // GLOBAL SECURITY CHECK: For ANY page (public or private), validate user belongs to current subdomain
   // This catches ALL attempts to access other company's URLs/resources
   const session = await auth();
+
+  // If session is null (user not authenticated), skip company validation
   if (session && session.user) {
     const userCompanySubdomain = (session.user as any)?.companySubdomain;
 
