@@ -103,7 +103,7 @@ const BrandingManagement: React.FC = () => {
       || (currentValues.logoAltText && currentValues.logoAltText !== '')
       || (currentValues.faviconUrl && currentValues.faviconUrl !== '')
     );
-  }, [watchedValues]);
+  }, [watchedValues, defaultValues.primaryColor, defaultValues.secondaryColor, defaultValues.backgroundColor, defaultValues.fontFamily]);
 
   // Reset form when branding data loads
   React.useEffect(() => {
