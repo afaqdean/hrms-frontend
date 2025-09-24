@@ -72,6 +72,34 @@ export const useCompanyData = (companyId?: string) => {
   };
 };
 
+// Hook for getting company data by subdomain
+export const useCompanyBySubdomain = (subdomain?: string) => {
+  const [isClient, setIsClient] = useState(false);
+
+  // Only run on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const { data: company, isLoading, error, refetch } = useQuery({
+    queryKey: ['company-by-subdomain', subdomain],
+    queryFn: async (): Promise<Company> => {
+      const response = await API.get(`/company/by-subdomain/${subdomain}`);
+      return response.data;
+    },
+    enabled: isClient && !!subdomain,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    company,
+    isLoading,
+    error: error?.message,
+    refetch,
+  };
+};
+
 // Hook for getting all companies (admin only)
 export const useCompanies = () => {
   const { data: companies, isLoading, error, refetch } = useQuery({

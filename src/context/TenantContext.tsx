@@ -1,7 +1,7 @@
 'use client';
 
 import type { TenantContextType, TenantProviderProps } from '@/interfaces';
-import { useCompanyData } from '@/hooks/useCompanyData';
+import { useCompanyBySubdomain, useCompanyData } from '@/hooks/useCompanyData';
 import React, { useEffect, useMemo, useState } from 'react';
 import { TenantContext } from './tenant.context';
 
@@ -14,9 +14,18 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   const [isClient, setIsClient] = useState(false);
 
   // Only use React Query hooks on the client side
-  const { company, isLoading: companyLoading } = useCompanyData(
-    isClient && companyId ? companyId : undefined,
+  const { company: companyById, isLoading: companyByIdLoading } = useCompanyData(
+    isClient && companyId && companyId !== 'pending' ? companyId : undefined,
   );
+
+  // Use subdomain-based company fetching when companyId is 'pending'
+  const { company: companyBySubdomain, isLoading: companyBySubdomainLoading } = useCompanyBySubdomain(
+    isClient && companyId === 'pending' && tenant ? tenant : undefined,
+  );
+
+  // Use the appropriate company data
+  const company = companyById || companyBySubdomain;
+  const companyLoading = companyByIdLoading || companyBySubdomainLoading;
 
   // Set client-side flag
   useEffect(() => {
