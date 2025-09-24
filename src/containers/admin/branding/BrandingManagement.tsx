@@ -141,16 +141,21 @@ const BrandingManagement: React.FC = () => {
         faviconUrl: data.faviconUrl || undefined,
       };
       console.error('📝 Prepared submitData:', submitData);
+      console.error('🏢 Tenant info:', { tenantType, companyId, userData: userData?.id });
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
+        console.error('🔄 Attempting to update branding for company:', companyId);
+        console.error('🔄 Update mutation status:', updateBrandingMutation.status);
+        console.error('🔄 Update mutation error:', updateBrandingMutation.error);
         try {
-          await updateBrandingMutation.mutateAsync({
+          const result = await updateBrandingMutation.mutateAsync({
             companyId,
             updateData: submitData,
           });
+          console.error('✅ Update branding successful:', result);
         } catch (error) {
-          console.error('Update branding failed, trying to create:', error);
+          console.error('❌ Update branding failed, trying to create:', error);
           // If update fails, try to create new branding
           await createBrandingMutation.mutateAsync({
             companyId,
@@ -159,6 +164,7 @@ const BrandingManagement: React.FC = () => {
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
+        console.error('🔄 Creating branding for user:', userData.id);
         await createBrandingMutation.mutateAsync({
           companyId: userData.id,
           ...submitData,
