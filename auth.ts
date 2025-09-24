@@ -346,12 +346,30 @@ export const authConfig: NextAuthConfig = {
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
+    // Get tenant information from the current domain
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const hostParts = hostname.split('.');
+    let tenant = 'base';
+
+    if (hostParts.length >= 3) {
+      const subdomain = hostParts[0] || '';
+      if (subdomain === 'www') {
+        tenant = 'base';
+      } else {
+        tenant = subdomain;
+      }
+    }
+
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token.refreshToken}`,
+        'x-tenant': tenant,
+        'x-tenant-type': tenant === 'base' ? 'base' : 'company',
       },
+      body: JSON.stringify({
+        refreshToken: token.refreshToken,
+      }),
     });
 
     const data = await response.json();
