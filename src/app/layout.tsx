@@ -69,6 +69,7 @@ export default async function RootLayout(props: Readonly<{
   return (
     <html lang="en" className={`${poppins.variable}`}>
       <head>
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="theme-color" content="#ffffff" />

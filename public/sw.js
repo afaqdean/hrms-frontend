@@ -90,6 +90,11 @@ function fromCache(request) {
 }
 
 function updateCache(request, response) {
+  // Skip caching for chrome-extension requests
+  if (request.url && request.url.startsWith('chrome-extension://')) {
+    return Promise.resolve();
+  }
+
   return caches.open(CACHE).then((cache) => {
     return cache.put(request, response);
   });

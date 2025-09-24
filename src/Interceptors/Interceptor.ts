@@ -20,7 +20,8 @@ API.interceptors.request.use(
       const cookies = parseCookies();
       const token = cookies.token;
 
-      if (token) {
+      // Only add token if it exists and is not expired
+      if (token && token.trim() !== '') {
         // Set the Authorization header properly
         config.headers.Authorization = `Bearer ${token}`;
       }
