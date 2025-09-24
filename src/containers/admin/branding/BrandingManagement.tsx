@@ -39,8 +39,8 @@ const BrandingManagement: React.FC = () => {
   const {
     branding,
     isLoading,
-    createBranding,
-    updateBranding,
+    createBrandingMutation,
+    updateBrandingMutation,
     isUpdating,
     refetch,
   } = useBranding();
@@ -145,20 +145,21 @@ const BrandingManagement: React.FC = () => {
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
         try {
-          await updateBranding({
+          await updateBrandingMutation.mutateAsync({
             companyId,
             updateData: submitData,
           });
-        } catch {
+        } catch (error) {
+          console.error('Update branding failed, trying to create:', error);
           // If update fails, try to create new branding
-          await createBranding({
+          await createBrandingMutation.mutateAsync({
             companyId,
             ...submitData,
           });
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
-        await createBranding({
+        await createBrandingMutation.mutateAsync({
           companyId: userData.id,
           ...submitData,
         });
