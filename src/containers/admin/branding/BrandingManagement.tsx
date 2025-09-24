@@ -32,7 +32,7 @@ type BrandingFormData = z.infer<typeof brandingSchema>;
 
 const BrandingManagement: React.FC = () => {
   const { userData } = useAuth();
-  const { tenantType, companyId } = useTenant();
+  const { tenant, tenantType, companyId } = useTenant();
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [faviconPreview, setFaviconPreview] = useState<string>('');
 
@@ -142,6 +142,13 @@ const BrandingManagement: React.FC = () => {
       };
       console.error('📝 Prepared submitData:', submitData);
       console.error('🏢 Tenant info:', { tenantType, companyId, userData: userData?.id });
+      console.error('🏢 Company data loading status:', {
+        tenant,
+        tenantType,
+        companyId,
+        isLoading,
+        branding: branding?.id,
+      });
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
