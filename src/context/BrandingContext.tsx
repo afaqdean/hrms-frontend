@@ -130,6 +130,7 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding when it changes
   useEffect(() => {
+    console.error('🎨 Branding context effect triggered:', { branding, isLoading, currentBranding });
     if (branding && !isLoading) {
       // Only apply if it's different from current branding to avoid unnecessary updates
       const isDifferent = !currentBranding
@@ -140,17 +141,14 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
         || currentBranding.logoUrl !== branding.logoUrl
         || currentBranding.faviconUrl !== branding.faviconUrl;
 
+      console.error('🎨 Is branding different?', isDifferent);
       if (isDifferent) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Applying branding:', branding);
-        }
+        console.error('🎨 Applying updated branding:', branding);
         applyBranding(branding);
         setCurrentBranding(branding);
       }
     } else if (!branding && !isLoading && currentBranding) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('No branding found, resetting to default');
-      }
+      console.error('🎨 No branding found, resetting to default');
       // Reset to default when no branding is found
       resetToDefault();
     }

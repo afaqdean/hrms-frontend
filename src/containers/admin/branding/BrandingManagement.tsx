@@ -185,13 +185,10 @@ const BrandingManagement: React.FC = () => {
       applyBranding(brandingToApply);
 
       // Refresh the branding data and apply it to the context
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Refreshing branding data...');
-      }
+      console.error('🔄 Refreshing branding data...');
       await refetch();
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Branding data refreshed');
-      }
+      console.error('✅ Branding data refreshed');
+      console.error('🔄 Current branding after refresh:', branding);
 
       toast.success('Branding updated successfully!');
     } catch (error) {
