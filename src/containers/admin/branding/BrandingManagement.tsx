@@ -32,7 +32,7 @@ type BrandingFormData = z.infer<typeof brandingSchema>;
 
 const BrandingManagement: React.FC = () => {
   const { userData } = useAuth();
-  const { tenant, tenantType, companyId } = useTenant();
+  const { tenantType, companyId } = useTenant();
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [faviconPreview, setFaviconPreview] = useState<string>('');
 
@@ -128,7 +128,6 @@ const BrandingManagement: React.FC = () => {
   }, [branding, reset]);
 
   const onSubmit = async (data: BrandingFormData) => {
-    console.error('🚀 onSubmit called with data:', data);
     try {
       // Filter out empty values and prepare the data for submission
       const submitData = {
@@ -140,29 +139,16 @@ const BrandingManagement: React.FC = () => {
         logoAltText: data.logoAltText || undefined,
         faviconUrl: data.faviconUrl || undefined,
       };
-      console.error('📝 Prepared submitData:', submitData);
-      console.error('🏢 Tenant info:', { tenantType, companyId, userData: userData?.id });
-      console.error('🏢 Company data loading status:', {
-        tenant,
-        tenantType,
-        companyId,
-        isLoading,
-        branding: branding?.id,
-      });
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
-        console.error('🔄 Attempting to update branding for company:', companyId);
-        console.error('🔄 Update mutation status:', updateBrandingMutation.status);
-        console.error('🔄 Update mutation error:', updateBrandingMutation.error);
         try {
-          const result = await updateBrandingMutation.mutateAsync({
+          await updateBrandingMutation.mutateAsync({
             companyId,
             updateData: submitData,
           });
-          console.error('✅ Update branding successful:', result);
         } catch (error) {
-          console.error('❌ Update branding failed, trying to create:', error);
+          console.error('Update branding failed, trying to create:', error);
           // If update fails, try to create new branding
           await createBrandingMutation.mutateAsync({
             companyId,
@@ -171,7 +157,6 @@ const BrandingManagement: React.FC = () => {
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
-        console.error('🔄 Creating branding for user:', userData.id);
         await createBrandingMutation.mutateAsync({
           companyId: userData.id,
           ...submitData,
@@ -196,12 +181,8 @@ const BrandingManagement: React.FC = () => {
         updatedAt: new Date(),
       };
 
-      console.error('🎨 About to apply branding:', brandingToApply);
-      console.error('🎨 applyBranding function:', applyBranding);
-
       // Apply branding immediately for instant visual feedback
       applyBranding(brandingToApply);
-      console.error('✅ applyBranding called successfully');
 
       // Refresh the branding data and apply it to the context
       if (process.env.NODE_ENV === 'development') {

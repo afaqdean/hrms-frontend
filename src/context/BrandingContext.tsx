@@ -16,26 +16,16 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding to CSS variables
   const applyBranding = useCallback((brandingData: CompanyBranding) => {
-    console.error('🎨 applyBranding called with:', brandingData);
     if (typeof window === 'undefined') {
-      console.error('❌ Window is undefined, skipping branding application');
       return;
     }
 
     const root = document.documentElement;
-    console.error('🎨 Applying branding to document root');
 
     // Apply color scheme
     const primaryHsl = hexToHsl(brandingData.primaryColor);
     const secondaryHsl = hexToHsl(brandingData.secondaryColor);
     const backgroundHsl = hexToHsl(brandingData.backgroundColor);
-
-    console.error('🎨 Setting CSS variables:', {
-      primary: primaryHsl,
-      secondary: secondaryHsl,
-      background: backgroundHsl,
-      fontFamily: brandingData.fontFamily,
-    });
 
     root.style.setProperty('--primary', primaryHsl);
     root.style.setProperty('--secondary', secondaryHsl);

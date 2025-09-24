@@ -114,7 +114,7 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   const value: TenantContextType = useMemo(() => ({
     tenant,
     tenantType,
-    companyId: companyId === 'pending' ? null : companyId,
+    companyId: company?.id || companyId,
     company,
     isLoading: isLoading || (isClient && companyLoading),
     error,
