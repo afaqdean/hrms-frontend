@@ -128,6 +128,7 @@ const BrandingManagement: React.FC = () => {
   }, [branding, reset]);
 
   const onSubmit = async (data: BrandingFormData) => {
+    console.error('🚀 onSubmit called with data:', data);
     try {
       // Filter out empty values and prepare the data for submission
       const submitData = {
@@ -139,6 +140,7 @@ const BrandingManagement: React.FC = () => {
         logoAltText: data.logoAltText || undefined,
         faviconUrl: data.faviconUrl || undefined,
       };
+      console.error('📝 Prepared submitData:', submitData);
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
@@ -180,11 +182,12 @@ const BrandingManagement: React.FC = () => {
         updatedAt: new Date(),
       };
 
+      console.error('🎨 About to apply branding:', brandingToApply);
+      console.error('🎨 applyBranding function:', applyBranding);
+
       // Apply branding immediately for instant visual feedback
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Applying branding immediately:', brandingToApply);
-      }
       applyBranding(brandingToApply);
+      console.error('✅ applyBranding called successfully');
 
       // Refresh the branding data and apply it to the context
       if (process.env.NODE_ENV === 'development') {
