@@ -1,10 +1,12 @@
 import type { CreateCompanyBrandingDto, UpdateCompanyBrandingDto } from '../interfaces/CompanyBranding';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
 import { useTenant } from '../context/useTenant';
 import { brandingApi } from '../services/brandingApi';
 
 export const useBranding = () => {
   const { tenant, tenantType } = useTenant();
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   // Get branding based on tenant type
@@ -22,7 +24,7 @@ export const useBranding = () => {
         return await brandingApi.getDefaultBranding();
       }
     },
-    enabled: (!!tenant || tenantType === 'base'),
+    enabled: (!!tenant || tenantType === 'base') && isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
     retryDelay: 1000,
@@ -80,6 +82,7 @@ export const useBranding = () => {
 };
 
 export const useBrandingByCompanyId = (companyId: string) => {
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -90,7 +93,7 @@ export const useBrandingByCompanyId = (companyId: string) => {
   } = useQuery({
     queryKey: ['branding', companyId],
     queryFn: () => brandingApi.getBrandingByCompanyId(companyId),
-    enabled: !!companyId,
+    enabled: !!companyId && isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
