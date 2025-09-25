@@ -207,8 +207,11 @@ export const authConfig: NextAuthConfig = {
         typeof token.accessTokenExpires === 'number'
         && Date.now() < token.accessTokenExpires
       ) {
+        console.warn('Token is still valid, returning existing token');
         return token;
       }
+
+      console.warn('Token expired, attempting refresh. Expires at:', new Date(token.accessTokenExpires || 0));
 
       // Refresh the token
       return await refreshAccessToken(token);
@@ -216,6 +219,16 @@ export const authConfig: NextAuthConfig = {
 
     async session({ session, token }: { session: Session; token: JWT }): Promise<any> {
       if (token.error === 'RefreshAccessTokenError') {
+        console.warn('RefreshAccessTokenError detected, clearing session');
+        // Clear cookies and localStorage when refresh fails
+        if (typeof window !== 'undefined') {
+          try {
+            const { cookieUtils } = await import('./src/lib/cookie-utils');
+            cookieUtils.clearAuthCookies();
+          } catch (error) {
+            console.error('Error clearing auth cookies:', error);
+          }
+        }
         return null;
       }
 
@@ -385,7 +398,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       cookieStore.set('token', data.tokens.access_token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60, // 24 hours in seconds
+        maxAge: 2 * 24 * 60 * 60, // 2 days in seconds to match backend
         path: '/',
         sameSite: 'lax',
         domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
@@ -397,12 +410,23 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     return {
       ...token,
       accessToken: data.tokens.access_token,
-      accessTokenExpires: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+      accessTokenExpires: Date.now() + (2 * 24 * 60 * 60 * 1000), // 2 days to match backend
       refreshToken: data.tokens.refresh_token ?? token.refreshToken,
       error: undefined,
     };
   } catch (error) {
     console.error('RefreshAccessTokenError:', error);
+
+    // Clear cookies and localStorage when refresh fails
+    if (typeof window !== 'undefined') {
+      try {
+        const { cookieUtils } = await import('./src/lib/cookie-utils');
+        cookieUtils.clearAuthCookies();
+      } catch (clearError) {
+        console.error('Error clearing auth cookies in refreshAccessToken:', clearError);
+      }
+    }
+
     return {
       ...token,
       error: 'RefreshAccessTokenError',

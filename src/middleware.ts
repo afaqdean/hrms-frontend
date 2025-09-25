@@ -66,6 +66,12 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
+  // Check if session is invalid (expired or corrupted)
+  if (session && !(session as any).accessToken) {
+    console.warn('Session missing access token, redirecting to sign-in');
+    return NextResponse.redirect(new URL('/sign-in', req.url));
+  }
+
   // If it's a public page, check if user is logged in and should be redirected to their company
   if (isPublicPage) {
     // Handle root path redirect to sign-in
