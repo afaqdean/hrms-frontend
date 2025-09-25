@@ -119,6 +119,14 @@ export const authConfig: NextAuthConfig = {
           const tenant = (credentials as any)?.tenant || 'base';
           const tenantType = (credentials as any)?.tenantType || 'base';
 
+          console.warn('Attempting login with:', {
+            apiUrl: API_URL,
+            tenant,
+            tenantType,
+            email: credentials?.email,
+            role: (credentials as any)?.role || 'Employee',
+          });
+
           const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
@@ -133,8 +141,20 @@ export const authConfig: NextAuthConfig = {
             }),
           });
 
+          console.warn('Login response:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+          });
+
           if (!response.ok) {
             const errorData = await response.json();
+            console.error('Login failed:', {
+              status: response.status,
+              statusText: response.statusText,
+              errorData,
+              apiUrl: API_URL,
+            });
             throw new Error(errorData.message || 'Authentication failed');
           }
 
@@ -167,7 +187,23 @@ export const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }): Promise<JWT> {
+      console.warn('JWT callback called:', {
+        hasUser: !!user,
+        hasToken: !!token,
+        hasAccessToken: !!token.accessToken,
+        tokenExpires: token.accessTokenExpires ? new Date(token.accessTokenExpires) : null,
+        isExpired: token.accessTokenExpires ? Date.now() > token.accessTokenExpires : null,
+        tokenError: token.error,
+      });
+
       if (user) {
+        console.warn('New user login, creating token:', {
+          hasUserToken: !!user.token,
+          tokenExpires: user.tokenExpires,
+          hasRefreshToken: !!user.refreshToken,
+          userRole: user.role,
+        });
+
         return {
           ...token,
           accessToken: user.token,
@@ -218,6 +254,15 @@ export const authConfig: NextAuthConfig = {
     },
 
     async session({ session, token }: { session: Session; token: JWT }): Promise<any> {
+      console.warn('Session callback called:', {
+        hasToken: !!token,
+        hasAccessToken: !!token.accessToken,
+        hasUser: !!token.user,
+        tokenError: token.error,
+        tokenExpires: token.accessTokenExpires ? new Date(token.accessTokenExpires) : null,
+        isExpired: token.accessTokenExpires ? Date.now() > token.accessTokenExpires : null,
+      });
+
       if (token.error === 'RefreshAccessTokenError') {
         console.warn('RefreshAccessTokenError detected, clearing session');
         // Clear cookies and localStorage when refresh fails
@@ -232,11 +277,19 @@ export const authConfig: NextAuthConfig = {
         return null;
       }
 
-      return {
+      const sessionData = {
         ...session,
         accessToken: token.accessToken,
         user: token.user,
       };
+
+      console.warn('Returning session data:', {
+        hasAccessToken: !!sessionData.accessToken,
+        hasUser: !!sessionData.user,
+        userRole: (sessionData.user as any)?.role,
+      });
+
+      return sessionData;
     },
   },
   events: {
@@ -249,7 +302,7 @@ export const authConfig: NextAuthConfig = {
           cookieStore.set('token', user.token, {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
             domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
@@ -259,7 +312,7 @@ export const authConfig: NextAuthConfig = {
           cookieStore.set('userRole', user.role || 'Employee', {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
             domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
@@ -281,7 +334,7 @@ export const authConfig: NextAuthConfig = {
           cookieStore.set('userData', JSON.stringify(userData), {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
             domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
@@ -353,7 +406,7 @@ export const authConfig: NextAuthConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 2 * 24 * 60 * 60, // 2 days to match backend
   },
 };
 
@@ -373,6 +426,13 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       }
     }
 
+    console.warn('Attempting to refresh token with:', {
+      apiUrl: API_URL,
+      tenant,
+      tenantType: tenant === 'base' ? 'base' : 'company',
+      hasRefreshToken: !!token.refreshToken,
+    });
+
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
@@ -385,10 +445,21 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       }),
     });
 
+    console.warn('Refresh token response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+    });
+
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Refresh token failed:', data);
+      console.error('Refresh token failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+        apiUrl: API_URL,
+      });
       throw data;
     }
 
@@ -416,6 +487,11 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     };
   } catch (error) {
     console.error('RefreshAccessTokenError:', error);
+
+    // Check if it's a network/API connectivity issue
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('Network error - API server may be unreachable:', API_URL);
+    }
 
     // Clear cookies and localStorage when refresh fails
     if (typeof window !== 'undefined') {
