@@ -83,21 +83,6 @@ const BrandingManagement: React.FC = () => {
 
   // Live preview - apply changes as user types (without conflicting with database branding)
   React.useEffect(() => {
-    console.warn('🎨 Live preview effect triggered:', {
-      watchedValues: {
-        primaryColor: watchedValues.primaryColor,
-        secondaryColor: watchedValues.secondaryColor,
-        backgroundColor: watchedValues.backgroundColor,
-        fontFamily: watchedValues.fontFamily,
-      },
-      currentBranding: {
-        primaryColor: currentBranding?.primaryColor,
-        secondaryColor: currentBranding?.secondaryColor,
-        backgroundColor: currentBranding?.backgroundColor,
-        fontFamily: currentBranding?.fontFamily,
-      },
-    });
-
     // Only apply live preview if we have form values and they're different from the current branding
     const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily;
     const isDifferentFromCurrent = !currentBranding || (
@@ -106,12 +91,6 @@ const BrandingManagement: React.FC = () => {
       || watchedValues.backgroundColor !== currentBranding.backgroundColor
       || watchedValues.fontFamily !== currentBranding.fontFamily
     );
-
-    console.warn('🎨 Live preview conditions:', {
-      hasFormValues,
-      isDifferentFromCurrent,
-      willApply: hasFormValues && isDifferentFromCurrent,
-    });
 
     if (hasFormValues && isDifferentFromCurrent) {
       const livePreviewData = {
@@ -126,7 +105,6 @@ const BrandingManagement: React.FC = () => {
         updatedAt: new Date(),
       };
 
-      console.warn('🎨 Applying live preview branding:', livePreviewData);
       // Apply live preview branding
       applyBranding(livePreviewData);
     }
@@ -180,8 +158,6 @@ const BrandingManagement: React.FC = () => {
 
   const onSubmit = async (data: BrandingFormData) => {
     try {
-      // Debug: Log tenant information
-      console.warn('🔍 Tenant info:', { tenantType, companyId, userData: userData?.id });
       // Filter out empty values and prepare the data for submission
       const submitData = {
         primaryColor: data.primaryColor || '#11121A',
@@ -195,21 +171,17 @@ const BrandingManagement: React.FC = () => {
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
-        console.warn('🔍 Attempting to save company branding:', { companyId, submitData });
         try {
-          const result = await updateBrandingMutation.mutateAsync({
+          await updateBrandingMutation.mutateAsync({
             companyId,
             updateData: submitData,
           });
-          console.warn('🔍 Update branding success:', result);
-        } catch (error) {
-          console.error('Update branding failed, trying to create:', error);
+        } catch {
           // If update fails, try to create new branding
-          const result = await createBrandingMutation.mutateAsync({
+          await createBrandingMutation.mutateAsync({
             companyId,
             ...submitData,
           });
-          console.warn('🔍 Create branding success:', result);
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
@@ -238,19 +210,16 @@ const BrandingManagement: React.FC = () => {
       };
 
       // Apply branding immediately for instant visual feedback
-      console.warn('🎨 Applying branding after save:', brandingToApply);
       applyBranding(brandingToApply);
 
       // Add a small delay to prevent immediate revert from cache invalidation
       setTimeout(() => {
-        console.warn('🎨 Save completed successfully');
         // Invalidate and refetch branding to get the newly saved custom branding
         queryClient.invalidateQueries({ queryKey: ['branding'] });
         toast.success('Branding updated successfully!');
       }, 100);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update branding. Please try again.');
-      console.error('Error updating branding:', error);
     }
   };
 

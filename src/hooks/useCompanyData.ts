@@ -84,9 +84,7 @@ export const useCompanyBySubdomain = (subdomain?: string) => {
   const { data: company, isLoading, error, refetch } = useQuery({
     queryKey: ['company-by-subdomain', subdomain],
     queryFn: async (): Promise<Company> => {
-      console.warn('🔍 Fetching company by subdomain:', subdomain);
       const response = await API.get(`/company/by-subdomain/${subdomain}`);
-      console.warn('🔍 Company data result:', response.data);
       return response.data;
     },
     enabled: isClient && !!subdomain,

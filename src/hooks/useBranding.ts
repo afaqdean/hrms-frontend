@@ -18,34 +18,16 @@ export const useBranding = () => {
   } = useQuery({
     queryKey: ['branding', tenant, tenantType, userData?.id],
     queryFn: async () => {
-      console.warn('🔍 useBranding queryFn called:', {
-        tenantType,
-        tenant,
-        userData: userData?.id,
-        isAuthenticated,
-        hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
-      });
-
       if (tenantType === 'company' && tenant) {
-        console.warn('🔍 Fetching company branding for subdomain:', tenant);
-        try {
-          const result = await brandingApi.getBrandingBySubdomain(tenant);
-          console.warn('🔍 Company branding result:', result);
-          console.warn('🔍 Branding ID from API:', result.branding?.id);
-          console.warn('🔍 Branding companyId from API:', result.branding?.companyId);
-          return result;
-        } catch (error) {
-          console.warn('🔍 Company branding fetch failed:', error);
-          throw error;
-        }
+        const result = await brandingApi.getBrandingBySubdomain(tenant);
+        return result;
       } else {
         // For base domain, try to get user-specific branding first
         if (userData?.id) {
           try {
-            console.warn('🔍 Trying to get user-specific branding for user:', userData.id);
             return await brandingApi.getBrandingByCompanyId(userData.id);
-          } catch (error) {
-            console.warn('No user-specific branding found, falling back to default:', error);
+          } catch {
+            // Fall back to default branding
           }
         }
 
@@ -63,8 +45,7 @@ export const useBranding = () => {
   const createBrandingMutation = useMutation({
     mutationFn: (createBrandingDto: CreateCompanyBrandingDto) =>
       brandingApi.createBranding(createBrandingDto),
-    onSuccess: (data) => {
-      console.warn('Create branding mutation success:', data);
+    onSuccess: () => {
       // Don't invalidate immediately to prevent revert
       // The branding context will handle the update
     },
@@ -77,8 +58,7 @@ export const useBranding = () => {
   const updateBrandingMutation = useMutation({
     mutationFn: ({ companyId, updateData }: { companyId: string; updateData: UpdateCompanyBrandingDto }) =>
       brandingApi.updateBranding(companyId, updateData),
-    onSuccess: (data) => {
-      console.warn('Update branding mutation success:', data);
+    onSuccess: () => {
       // Don't invalidate immediately to prevent revert
       // The branding context will handle the update
     },

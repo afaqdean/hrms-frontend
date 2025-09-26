@@ -16,17 +16,7 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding to CSS variables
   const applyBranding = useCallback((brandingData: CompanyBranding) => {
-    console.warn('🎨 applyBranding called with:', {
-      id: brandingData.id,
-      companyId: brandingData.companyId,
-      primaryColor: brandingData.primaryColor,
-      secondaryColor: brandingData.secondaryColor,
-      backgroundColor: brandingData.backgroundColor,
-      fontFamily: brandingData.fontFamily,
-    });
-
     if (typeof window === 'undefined') {
-      console.warn('🎨 Skipping applyBranding - not in browser');
       return;
     }
 
@@ -38,24 +28,9 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     const backgroundHsl = hexToHsl(brandingData.backgroundColor);
 
     // Use setProperty with important flag to ensure it overrides CSS
-    console.warn('🎨 Setting CSS variables:', {
-      primary: primaryHsl,
-      secondary: secondaryHsl,
-      background: backgroundHsl,
-      fontFamily: brandingData.fontFamily,
-    });
-
     root.style.setProperty('--primary', primaryHsl, 'important');
     root.style.setProperty('--secondary', secondaryHsl, 'important');
     root.style.setProperty('--background', backgroundHsl, 'important');
-
-    // Verify the values were set
-    const computedStyle = getComputedStyle(root);
-    console.warn('🎨 CSS variables after setting:', {
-      primary: computedStyle.getPropertyValue('--primary'),
-      secondary: computedStyle.getPropertyValue('--secondary'),
-      background: computedStyle.getPropertyValue('--background'),
-    });
 
     // Apply font family
     root.style.setProperty('--font-family', `'${brandingData.fontFamily}', sans-serif`, 'important');
@@ -81,9 +56,6 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     // Save to localStorage for persistence
     try {
       localStorage.setItem('branding', JSON.stringify(brandingData));
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Saved branding to localStorage:', brandingData);
-      }
     } catch (error) {
       console.error('Error saving branding to localStorage:', error);
       // Show user notification about storage issue
@@ -104,9 +76,6 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
       if (savedBranding) {
         try {
           const parsedBranding = JSON.parse(savedBranding);
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Loading saved branding from localStorage as fallback:', parsedBranding);
-          }
           applyBranding(parsedBranding);
           setCurrentBranding(parsedBranding);
         } catch (error) {
@@ -141,9 +110,6 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     // Clear localStorage
     try {
       localStorage.removeItem('branding');
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Cleared branding from localStorage');
-      }
     } catch (error) {
       console.error('Error clearing branding from localStorage:', error);
     }
@@ -153,27 +119,6 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding when it changes from the database
   useEffect(() => {
-    console.warn('🎨 BrandingContext effect triggered:', {
-      branding: branding
-        ? {
-            id: branding.id,
-            companyId: branding.companyId,
-            primaryColor: branding.primaryColor,
-            secondaryColor: branding.secondaryColor,
-            backgroundColor: branding.backgroundColor,
-            fontFamily: branding.fontFamily,
-          }
-        : null,
-      isLoading,
-      currentBranding: currentBranding
-        ? {
-            id: currentBranding.id,
-            companyId: currentBranding.companyId,
-            primaryColor: currentBranding.primaryColor,
-          }
-        : null,
-    });
-
     if (branding && !isLoading) {
       // Don't apply if live preview is active
       const isLivePreview = currentBranding?.id === 'live-preview';
@@ -185,41 +130,18 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
         const hasCurrentBranding = currentBranding && currentBranding.id !== 'default';
 
         if (!isDefaultBranding || !hasCurrentBranding) {
-          console.warn('🎨 Applying branding from database:', {
-            brandingId: branding.id,
-            isDefault: isDefaultBranding,
-            hasCurrent: hasCurrentBranding,
-          });
           applyBranding(branding);
           setCurrentBranding(branding);
-        } else {
-          console.warn('🎨 Skipping default branding - custom branding already active');
         }
-      } else {
-        console.warn('🎨 Skipping database branding - live preview active');
       }
     } else if (!branding && !isLoading) {
-      console.warn('🎨 No branding found, resetting to default');
       // Reset to default when no branding is found
       resetToDefault();
     }
   }, [branding, isLoading, applyBranding, resetToDefault, currentBranding]);
 
-  // Debug logging for branding state changes
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Branding state changed:', {
-        branding,
-        isLoading,
-        error,
-        currentBranding,
-      });
-    }
-  }, [branding, isLoading, error, currentBranding]);
-
   // Clear current branding (useful for clearing live preview)
   const clearCurrentBranding = useCallback(() => {
-    console.warn('🎨 Clearing current branding');
     setCurrentBranding(null);
   }, []);
 
