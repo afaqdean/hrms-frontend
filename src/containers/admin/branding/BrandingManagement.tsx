@@ -86,13 +86,14 @@ const BrandingManagement: React.FC = () => {
   React.useEffect(() => {
     // Only apply live preview if we have form values and they're different from the current branding
     // Also check if we're not in the initial load state
-    const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily || watchedValues.logoUrl;
+    const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily || watchedValues.logoUrl || watchedValues.faviconUrl;
     const isDifferentFromCurrent = !currentBranding || (
       watchedValues.primaryColor !== currentBranding.primaryColor
       || watchedValues.secondaryColor !== currentBranding.secondaryColor
       || watchedValues.backgroundColor !== currentBranding.backgroundColor
       || watchedValues.fontFamily !== currentBranding.fontFamily
       || watchedValues.logoUrl !== currentBranding.logoUrl
+      || watchedValues.faviconUrl !== currentBranding.faviconUrl
     );
 
     // Only apply live preview after user has interacted with the form
@@ -466,10 +467,18 @@ const BrandingManagement: React.FC = () => {
                           {...register('logoUrl')}
                           placeholder="Or enter logo URL"
                           className="mb-2"
+                          onChange={(e) => {
+                            setValue('logoUrl', e.target.value);
+                            setHasUserInteracted(true);
+                          }}
                         />
                         <Input
                           {...register('logoAltText')}
                           placeholder="Logo alt text (for accessibility)"
+                          onChange={(e) => {
+                            setValue('logoAltText', e.target.value);
+                            setHasUserInteracted(true);
+                          }}
                         />
                       </div>
                     </div>
@@ -504,6 +513,10 @@ const BrandingManagement: React.FC = () => {
                         <Input
                           {...register('faviconUrl')}
                           placeholder="Or enter favicon URL"
+                          onChange={(e) => {
+                            setValue('faviconUrl', e.target.value);
+                            setHasUserInteracted(true);
+                          }}
                         />
                       </div>
                     </div>
