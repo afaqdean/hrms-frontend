@@ -18,7 +18,7 @@ const LeavesHistoryContainer = () => {
       <div className="flex flex-col justify-start  md:flex-row md:items-center md:justify-between md:px-0">
         <div className="flex justify-between  md:flex-none">
           <span className="mt-2 w-1/2 text-lg  font-medium text-primary-100 md:mt-0 md:w-full">Leaves History</span>
-          <Button variant="outline" className="w-32 rounded-full hover:bg-primary-100 hover:text-white md:hidden" onClick={() => setApplyLeaveModalOpen(true)}>
+          <Button variant="outline" className="w-32 rounded-full md:hidden" onClick={() => setApplyLeaveModalOpen(true)}>
             <BsArrowUpRightCircle className="" />
             <span className="text-xs">Apply Leave</span>
           </Button>

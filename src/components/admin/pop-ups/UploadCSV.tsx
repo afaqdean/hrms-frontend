@@ -169,7 +169,7 @@ export const UploadCSV: React.FC<UploadCSVProps> = ({ onCloseAction }) => {
         <Button
           onClick={handleUpload}
           disabled={selectedFiles.length === 0 || uploadMutation.isPending}
-          className="bg-primary-100 text-white hover:bg-black"
+          className=""
         >
           {uploadMutation.isPending ? 'Uploading...' : 'Upload'}
         </Button>

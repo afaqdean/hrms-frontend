@@ -20,19 +20,51 @@ const DynamicLogo: React.FC<DynamicLogoProps> = ({
 }) => {
   const { branding } = useBrandingContext();
 
-  // Use company logo if available, otherwise fall back to default
-  const logoSrc = branding?.logoUrl || huddleHRLogo.src;
+  // Check if custom logo is available
+  const hasCustomLogo = branding?.logoUrl;
   const logoAlt = branding?.logoAltText || 'Company Logo';
 
   return (
-    <Image
-      src={logoSrc}
-      height={height}
-      width={width}
-      className={className}
-      alt={logoAlt}
+    <div
+      className="flex cursor-pointer items-center gap-3"
       onClick={onClick}
-    />
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      {hasCustomLogo && branding.logoUrl
+        ? (
+            <>
+              {/* Custom Logo */}
+              <Image
+                src={branding.logoUrl}
+                height={height}
+                width={height} // Make it square for the logo
+                className="object-contain"
+                alt={logoAlt}
+              />
+              {/* HuddleHR Text */}
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-primary">HuddleHR</span>
+              </div>
+            </>
+          )
+        : (
+            /* Default Logo (includes text) */
+            <Image
+              src={huddleHRLogo.src}
+              height={height}
+              width={width}
+              className={className}
+              alt="HuddleHR Logo"
+            />
+          )}
+    </div>
   );
 };
 

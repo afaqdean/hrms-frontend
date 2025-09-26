@@ -231,7 +231,7 @@ const ImportDevice: React.FC<ImportDeviceProps> = ({ onClose }) => {
               type="button"
               onClick={handleGetAttendance}
               disabled={!startDate || !endDate || loading}
-              className="flex items-center gap-2 rounded bg-black px-4 py-2 text-white hover:bg-gray-800 disabled:opacity-50"
+              className="flex items-center gap-2 disabled:opacity-50"
             >
               {loading && (
                 <svg

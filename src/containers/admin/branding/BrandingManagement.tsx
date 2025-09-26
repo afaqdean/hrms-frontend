@@ -514,16 +514,22 @@ const BrandingManagement: React.FC = () => {
                   >
                     <div className="space-y-4">
                       <div className="flex items-center space-x-4">
-                        {logoPreview && (
-                          <Image
-                            src={logoPreview}
-                            alt={watchedValues.logoAltText || 'Company Logo'}
-                            width={48}
-                            height={48}
-                            className="h-12 w-auto max-w-32 object-contain"
-                          />
-                        )}
-                        <h2 className="text-2xl font-bold">Your Company Name</h2>
+                        {logoPreview
+                          ? (
+                              <>
+                                <Image
+                                  src={logoPreview}
+                                  alt={watchedValues.logoAltText || 'Company Logo'}
+                                  width={48}
+                                  height={48}
+                                  className="size-12 object-contain"
+                                />
+                                <h2 className="text-2xl font-bold">HuddleHR</h2>
+                              </>
+                            )
+                          : (
+                              <h2 className="text-2xl font-bold">HuddleHR</h2>
+                            )}
                       </div>
 
                       <div

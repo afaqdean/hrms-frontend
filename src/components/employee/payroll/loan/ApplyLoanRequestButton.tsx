@@ -13,7 +13,7 @@ const ApplyLoanRequestButton: React.FC = () => {
     <>
       <button
         type="button"
-        className="group flex items-center gap-2 rounded-full border-2 border-primary-100 bg-primary-100 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 ease-in hover:bg-white hover:text-primary-100"
+        className="group flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-semibold shadow-md transition-all duration-200 ease-in"
         style={{ minWidth: 140 }}
         onClick={() => setShowModal(true)}
       >

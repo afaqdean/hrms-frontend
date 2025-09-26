@@ -166,7 +166,7 @@ const ProfileSettingsContainer: React.FC<ProfileSettingsContainerProps> = ({ chi
                   </span>
                   <span
                     className={`flex size-12 items-center justify-center rounded-full transition-all
-                      ${isActive ? 'bg-primary-100 text-white' : 'bg-white text-primary-100 group-hover:bg-primary-100 group-hover:text-white'}`}
+                      ${isActive ? 'bg-primary text-primary-foreground' : 'bg-background text-primary group-hover:bg-primary group-hover:text-primary-foreground'}`}
                   >
                     <Icon className="size-5 transition-all" />
                   </span>

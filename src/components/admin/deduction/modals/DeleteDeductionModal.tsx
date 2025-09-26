@@ -30,7 +30,7 @@ const DeleteDeductionModal: React.FC<DeleteDeductionModalProps> = ({
           <button
             type="button"
             onClick={onConfirm}
-            className="w-full rounded-md bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none"
+            className="w-full rounded-md px-4 py-2 text-base font-medium shadow-sm focus:outline-none"
           >
             Delete
           </button>

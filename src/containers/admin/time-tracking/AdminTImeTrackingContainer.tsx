@@ -399,7 +399,7 @@ const AdminTimeTrackingContainer: React.FC = () => {
                             onClick={() => setSelectedMonth(month)}
                             variant="outline"
                             className={`rounded-full px-3 py-2 text-xs transition-all ${
-                              selectedMonth === month ? 'bg-black text-white' : 'bg-white text-gray-500'
+                              selectedMonth === month ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'
                             }`}
                           >
                             {month}

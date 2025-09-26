@@ -106,7 +106,7 @@ const ApplyLoanRequestForm: React.FC<ApplyLoanRequestFormProps> = ({ onClose }) 
         </button>
         <button
           type="submit"
-          className="flex-1 rounded-lg bg-primary-100 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-primary-100/90"
+          className="flex-1 rounded-lg py-3 font-semibold shadow-md transition-all duration-200"
           disabled={isPending}
         >
           {isPending ? 'Submitting...' : 'Submit'}

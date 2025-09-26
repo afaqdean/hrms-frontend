@@ -16,7 +16,7 @@ const PayrollManagementContainer: React.FC = () => {
 
         <Button
           onClick={() => router.push('/dashboard/admin/payroll-management/lambda-processing')}
-          className="bg-black text-white hover:bg-gray-800 sm:w-auto"
+          className="sm:w-auto"
         >
           <HiDocumentText className="mr-2 size-4" />
           Generate payslips

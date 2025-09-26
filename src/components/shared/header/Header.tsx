@@ -60,7 +60,7 @@ const Header = () => {
         {/* Show 'Apply for Leave' button only on Leave History Page */}
         {pathname === '/dashboard/employee/leaves-history' && (
           <>
-            <Button variant="outline" onClick={() => setApplyLeave(true)} className="flex h-full items-center rounded-full hover:bg-primary-100 hover:text-white">
+            <Button variant="outline" onClick={() => setApplyLeave(true)} className="flex h-full items-center rounded-full">
               <BsArrowUpRightCircle />
               <span>Apply for Leave</span>
             </Button>
@@ -94,7 +94,7 @@ const Header = () => {
         </div>
 
         {/* Profile Dropdown Menu */}
-        <div className="group flex cursor-pointer items-center justify-between rounded-full border border-[#F1F1F1] bg-[#FFFFFF] hover:bg-primary-100 hover:text-white">
+        <div className="group flex cursor-pointer items-center justify-between rounded-full border border-[#F1F1F1] bg-[#FFFFFF]">
 
           {/* User Avatar */}
           <Avatar src={userData?.profilePic} className="group-hover:text-white" />
