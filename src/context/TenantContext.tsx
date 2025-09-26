@@ -107,21 +107,42 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
   // Update companyId when company data is loaded
   useEffect(() => {
     console.warn('🔍 TenantContext company effect:', {
-      company: company ? { id: company.id, subdomain: company.subdomain } : null,
+      company: company
+        ? {
+            id: company.id,
+            _id: company._id,
+            subdomain: company.subdomain,
+            hasId: !!company.id,
+            has_id: !!company._id,
+            allKeys: Object.keys(company),
+          }
+        : null,
       companyId,
       companyLoading,
     });
 
-    if (company && company.id && companyId === 'pending') {
-      console.warn('🔍 Updating companyId from pending to:', company.id);
-      setCompanyId(company.id);
+    console.warn('🔍 Condition check:', {
+      hasCompany: !!company,
+      hasId: !!(company?.id),
+      has_id: !!(company?._id),
+      hasEitherId: !!(company?.id || company?._id),
+      companyIdIsPending: companyId === 'pending',
+      willUpdate: !!(company && (company.id || company._id) && companyId === 'pending'),
+    });
+
+    if (company && (company.id || company._id) && companyId === 'pending') {
+      const actualCompanyId = company.id || company._id;
+      if (actualCompanyId) {
+        console.warn('🔍 Updating companyId from pending to:', actualCompanyId);
+        setCompanyId(actualCompanyId);
+      }
     }
   }, [company, companyId, companyLoading]);
 
   const value: TenantContextType = useMemo(() => ({
     tenant,
     tenantType,
-    companyId: company?.id || companyId,
+    companyId: company?.id || company?._id || companyId,
     company,
     isLoading: isLoading || (isClient && companyLoading),
     error,
