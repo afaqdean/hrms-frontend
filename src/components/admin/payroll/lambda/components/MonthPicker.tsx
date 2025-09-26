@@ -25,10 +25,10 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ selectedMonth, onMonthChange 
         <label htmlFor="processing-month" className="mb-2 flex items-center gap-2 text-sm font-medium text-secondary-300">
           Processing Month
         </label>
-        <div className="flex items-center gap-3 rounded-lg border border-secondary-200 bg-secondary-100 px-4 py-2 text-sm font-medium text-primary-100">
+        <div className="flex items-center gap-3 rounded-lg border border-secondary-200 bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground">
           <button
             type="button"
-            className="rounded px-2 py-1 text-xs transition-colors hover:bg-secondary-200"
+            className="rounded px-2 py-1 text-xs transition-colors hover:bg-secondary/80"
             onClick={goToPreviousMonth}
             aria-label="Previous month"
           >
@@ -37,7 +37,7 @@ const MonthPicker: React.FC<MonthPickerProps> = ({ selectedMonth, onMonthChange 
           <span>{format(selectedMonth, 'MMM yyyy')}</span>
           <button
             type="button"
-            className="rounded px-2 py-1 text-xs transition-colors hover:bg-secondary-200"
+            className="rounded px-2 py-1 text-xs transition-colors hover:bg-secondary/80"
             onClick={goToNextMonth}
             aria-label="Next month"
           >

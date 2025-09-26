@@ -42,11 +42,11 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
           </p>
 
           <div className="rounded-2xl border border-warning bg-light-warning p-4">
-            <h4 className="mb-3 flex items-center text-sm font-semibold text-primary-100">
+            <h4 className="mb-3 flex items-center text-sm font-semibold text-foreground">
               <HiExclamation className="mr-2 size-4" />
               This will:
             </h4>
-            <ul className="space-y-2 text-sm text-primary-100">
+            <ul className="space-y-2 text-sm text-foreground">
               <li className="flex items-start">
                 <span className="mr-2 mt-0.5 flex size-4 items-center justify-center rounded-full bg-warning text-xs font-bold text-white">•</span>
                 <span>Process all employees in the uploaded salaries file</span>
@@ -78,7 +78,7 @@ const ProcessingModal: React.FC<ProcessingModalProps> = ({
           </Button>
           <Button
             onClick={onConfirm}
-            className="w-full bg-primary-100 hover:bg-primary-100/90 sm:w-auto"
+            className="w-full sm:w-auto"
           >
             <HiCheck className="mr-1 size-4" />
             Start Bulk Processing

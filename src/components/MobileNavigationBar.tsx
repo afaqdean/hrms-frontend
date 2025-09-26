@@ -129,8 +129,8 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({ isAdmin }) =>
                 className={clsx(
                   `flex w-full items-center gap-2 rounded-full border border-[#F1F1F1] px-4 py-2 text-sm transition-all duration-300`,
                   checkActive(link.path)
-                    ? 'bg-primary-100 text-white'
-                    : 'bg-white text-black hover:bg-primary-100 hover:text-white',
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-background text-foreground hover:bg-primary hover:text-primary-foreground',
                 )}
               >
                 {React.createElement(link.icon, { size: 18 })}

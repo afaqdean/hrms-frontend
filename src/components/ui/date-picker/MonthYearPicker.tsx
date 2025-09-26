@@ -70,8 +70,8 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({ selectedDate, onDateC
               onClick={() => handleMonthClick(index)}
               className={`flex h-12 items-center justify-center rounded-md text-sm font-medium transition-colors ${
                 isSelected
-                  ? 'bg-primary-100 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground hover:bg-secondary'
               }`}
             >
               {month}
