@@ -11,6 +11,7 @@ import { useBrandingContext } from '@/context/useBrandingContext';
 import { useTenant } from '@/context/useTenant';
 import { useBranding } from '@/hooks/useBranding';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { Image as LucideImage, Palette, RotateCcw, Save, Upload } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -33,6 +34,7 @@ type BrandingFormData = z.infer<typeof brandingSchema>;
 const BrandingManagement: React.FC = () => {
   const { userData } = useAuth();
   const { tenantType, companyId } = useTenant();
+  const queryClient = useQueryClient();
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [faviconPreview, setFaviconPreview] = useState<string>('');
 
@@ -44,7 +46,7 @@ const BrandingManagement: React.FC = () => {
     isUpdating,
   } = useBranding();
 
-  const { applyBranding, branding: currentBranding, clearCurrentBranding } = useBrandingContext();
+  const { applyBranding, branding: currentBranding } = useBrandingContext();
 
   // Listen for localStorage errors
   React.useEffect(() => {
@@ -242,8 +244,8 @@ const BrandingManagement: React.FC = () => {
       // Add a small delay to prevent immediate revert from cache invalidation
       setTimeout(() => {
         console.warn('🎨 Save completed successfully');
-        // Clear live preview after successful save
-        clearCurrentBranding();
+        // Invalidate and refetch branding to get the newly saved custom branding
+        queryClient.invalidateQueries({ queryKey: ['branding'] });
         toast.success('Branding updated successfully!');
       }, 100);
     } catch (error) {

@@ -23,6 +23,7 @@ export const useBranding = () => {
         tenant,
         userData: userData?.id,
         isAuthenticated,
+        hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
       });
 
       if (tenantType === 'company' && tenant) {
@@ -30,6 +31,8 @@ export const useBranding = () => {
         try {
           const result = await brandingApi.getBrandingBySubdomain(tenant);
           console.warn('🔍 Company branding result:', result);
+          console.warn('🔍 Branding ID from API:', result.branding?.id);
+          console.warn('🔍 Branding companyId from API:', result.branding?.companyId);
           return result;
         } catch (error) {
           console.warn('🔍 Company branding fetch failed:', error);

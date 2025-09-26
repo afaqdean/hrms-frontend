@@ -179,12 +179,22 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
       const isLivePreview = currentBranding?.id === 'live-preview';
 
       if (!isLivePreview) {
-        console.warn('🎨 Applying branding from database:', {
-          brandingId: branding.id,
-          isDefault: branding.id === 'default',
-        });
-        applyBranding(branding);
-        setCurrentBranding(branding);
+        // Only apply database branding if it's not default branding
+        // or if we don't have any current branding
+        const isDefaultBranding = branding.id === 'default';
+        const hasCurrentBranding = currentBranding && currentBranding.id !== 'default';
+
+        if (!isDefaultBranding || !hasCurrentBranding) {
+          console.warn('🎨 Applying branding from database:', {
+            brandingId: branding.id,
+            isDefault: isDefaultBranding,
+            hasCurrent: hasCurrentBranding,
+          });
+          applyBranding(branding);
+          setCurrentBranding(branding);
+        } else {
+          console.warn('🎨 Skipping default branding - custom branding already active');
+        }
       } else {
         console.warn('🎨 Skipping database branding - live preview active');
       }
