@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/context/AuthContext';
 import { useLogout } from '@/hooks/useLogout';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Palette } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { BsArrowUpRightCircle } from 'react-icons/bs';
@@ -128,6 +128,17 @@ const Header = () => {
                   <IoMdPerson className="text-gray-500" />
                   <span>Profile Settings</span>
                 </DropdownMenuItem>
+
+                {/* Branding Option - Only for Admin */}
+                {userData?.role.toLowerCase() === 'admin' && (
+                  <DropdownMenuItem
+                    className="flex cursor-pointer justify-start"
+                    onClick={() => router.push('/dashboard/admin/branding')}
+                  >
+                    <Palette className="text-gray-500" />
+                    <span>Branding</span>
+                  </DropdownMenuItem>
+                )}
 
                 {/* Logout Option */}
                 <DropdownMenuItem

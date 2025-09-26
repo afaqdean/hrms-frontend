@@ -138,6 +138,28 @@ const MobileNavigationBar: React.FC<MobileNavigationBarProps> = ({ isAdmin }) =>
               </Link>
             ))}
           </div>
+
+          {/* User Menu - Only for Admin */}
+          {userData?.role.toLowerCase() === 'admin' && (
+            <div className="mt-4 flex flex-col gap-4 py-3">
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="mb-3 text-sm font-medium text-gray-500">User Menu</h3>
+                <Link
+                  href="/dashboard/admin/branding"
+                  onClick={() => setOpenDrawer(false)}
+                  className={clsx(
+                    `flex w-full items-center gap-2 rounded-full border border-[#F1F1F1] px-4 py-2 text-sm transition-all duration-300`,
+                    checkActive('/dashboard/admin/branding')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-background text-foreground hover:bg-primary hover:text-primary-foreground',
+                  )}
+                >
+                  <Palette size={18} />
+                  Branding
+                </Link>
+              </div>
+            </div>
+          )}
         </SheetContent>
       </Sheet>
     </div>
