@@ -105,7 +105,7 @@ export default function PerformanceReviewContainer({
             <Button
               onClick={handleViewAllRequests}
               size="sm"
-              className="flex items-center gap-2 bg-blue-600 text-white shadow-md transition-all duration-200 hover:bg-blue-700 hover:shadow-lg"
+              className="flex items-center gap-2 shadow-md transition-all duration-200 hover:shadow-lg"
             >
               <Eye className="mr-2 size-4" />
               View All Requests
@@ -117,7 +117,7 @@ export default function PerformanceReviewContainer({
             <Button
               onClick={handleBackToCreate}
               size="sm"
-              className="flex items-center gap-2 bg-green-600 text-white shadow-md transition-all duration-200 hover:bg-green-700 hover:shadow-lg"
+              className="flex items-center gap-2 shadow-md transition-all duration-200 hover:shadow-lg"
             >
               Create New Review
             </Button>

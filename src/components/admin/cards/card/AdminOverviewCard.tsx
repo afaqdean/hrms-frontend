@@ -50,11 +50,11 @@ const AdminOverviewCardComponent: React.FC<AdminOverviewCardComponentProps> = ({
 
       {/* Content Section */}
       <div className="mt-4">
-        <h3 className="text-sm font-medium text-gray-600">{text}</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">{text}</h3>
         <div className="mt-2 flex items-baseline">
-          <p className="text-2xl font-semibold text-gray-800">{number}</p>
+          <p className="text-2xl font-semibold text-foreground">{number}</p>
           {percentage && (
-            <span className="ml-2 text-sm text-gray-500">
+            <span className="ml-2 text-sm text-muted-foreground">
               (
               {percentage}
               )
@@ -68,7 +68,7 @@ const AdminOverviewCardComponent: React.FC<AdminOverviewCardComponentProps> = ({
           </div>
         )}
         {description && (
-          <p className="mt-2 text-xs text-gray-500">{description}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{description}</p>
         )}
       </div>
 

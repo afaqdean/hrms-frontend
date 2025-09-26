@@ -53,7 +53,7 @@ const WeekSeparator: React.FC<{ weekRange: string }> = ({ weekRange }) => {
           {/* Week label with enhanced styling */}
           <div className="relative flex items-center gap-3  px-6 py-2">
             <div className="flex items-center gap-2 rounded-lg border border-secondary-200 bg-white px-4 py-2 shadow-sm">
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary-100 text-white">
+              <div className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <LuCalendarDays className="size-4" />
               </div>
               <div className="flex flex-col">

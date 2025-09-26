@@ -20,51 +20,46 @@ type UnsafeUnwrappedCookies = {
       maxAge?: number;
       path?: string;
       sameSite?: 'strict' | 'lax' | 'none';
+      domain?: string;
     }
   ) => void;
 };
 
 const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || 'https://code-huddle-hrms-dev-61ae656862e5.herokuapp.com').replace(/\/$/, '');
-// These interfaces are put in to another next-auth.s.ts file inside the types folder.
-// declare module 'next-auth' {
-//   type Session = {
-//     user: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       role?: string;
-//     };
-//     accessToken?: string;
-//     error?: string;
-//   };
-//   type User = {
-//     role?: string;
-//     accessToken?: string;
-//     refreshToken?: string;
-//     accessTokenExpires?: number;
-//   };
-// }
-
-// declare module 'next-auth/jwt' {
-//   type JWT = {
-//     accessToken?: string;
-//     refreshToken?: string;
-//     accessTokenExpires?: number;
-//     user?: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       role?: string;
-//     };
-//     error?: string;
-//   };
-// }
-
-// Note: We're not using localStorage directly in this server component
-// Instead, we'll handle token storage in the client components
 
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET || 'HRMS-SECRETS',
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: {
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+      },
+    },
+  },
 
   providers: [
     GitHub({
@@ -87,6 +82,14 @@ export const authConfig: NextAuthConfig = {
           const tenant = (credentials as any)?.tenant || 'base';
           const tenantType = (credentials as any)?.tenantType || 'base';
 
+          console.warn('Attempting login with:', {
+            apiUrl: API_URL,
+            tenant,
+            tenantType,
+            email: credentials?.email,
+            role: (credentials as any)?.role || 'Employee',
+          });
+
           const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
@@ -101,8 +104,20 @@ export const authConfig: NextAuthConfig = {
             }),
           });
 
+          console.warn('Login response:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+          });
+
           if (!response.ok) {
             const errorData = await response.json();
+            console.error('Login failed:', {
+              status: response.status,
+              statusText: response.statusText,
+              errorData,
+              apiUrl: API_URL,
+            });
             throw new Error(errorData.message || 'Authentication failed');
           }
 
@@ -135,7 +150,23 @@ export const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }): Promise<JWT> {
+      console.warn('JWT callback called:', {
+        hasUser: !!user,
+        hasToken: !!token,
+        hasAccessToken: !!token.accessToken,
+        tokenExpires: token.accessTokenExpires ? new Date(token.accessTokenExpires) : null,
+        isExpired: token.accessTokenExpires ? Date.now() > token.accessTokenExpires : null,
+        tokenError: token.error,
+      });
+
       if (user) {
+        console.warn('New user login, creating token:', {
+          hasUserToken: !!user.token,
+          tokenExpires: user.tokenExpires,
+          hasRefreshToken: !!user.refreshToken,
+          userRole: user.role,
+        });
+
         return {
           ...token,
           accessToken: user.token,
@@ -175,23 +206,53 @@ export const authConfig: NextAuthConfig = {
         typeof token.accessTokenExpires === 'number'
         && Date.now() < token.accessTokenExpires
       ) {
+        console.warn('Token is still valid, returning existing token');
         return token;
       }
+
+      console.warn('Token expired, attempting refresh. Expires at:', new Date(token.accessTokenExpires || 0));
 
       // Refresh the token
       return await refreshAccessToken(token);
     },
 
     async session({ session, token }: { session: Session; token: JWT }): Promise<any> {
+      console.warn('Session callback called:', {
+        hasToken: !!token,
+        hasAccessToken: !!token.accessToken,
+        hasUser: !!token.user,
+        tokenError: token.error,
+        tokenExpires: token.accessTokenExpires ? new Date(token.accessTokenExpires) : null,
+        isExpired: token.accessTokenExpires ? Date.now() > token.accessTokenExpires : null,
+      });
+
       if (token.error === 'RefreshAccessTokenError') {
+        console.warn('RefreshAccessTokenError detected, clearing session');
+        // Clear cookies and localStorage when refresh fails
+        if (typeof window !== 'undefined') {
+          try {
+            const { cookieUtils } = await import('./src/lib/cookie-utils');
+            cookieUtils.clearAuthCookies();
+          } catch (error) {
+            console.error('Error clearing auth cookies:', error);
+          }
+        }
         return null;
       }
 
-      return {
+      const sessionData = {
         ...session,
         accessToken: token.accessToken,
         user: token.user,
       };
+
+      console.warn('Returning session data:', {
+        hasAccessToken: !!sessionData.accessToken,
+        hasUser: !!sessionData.user,
+        userRole: (sessionData.user as any)?.role,
+      });
+
+      return sessionData;
     },
   },
   events: {
@@ -204,18 +265,20 @@ export const authConfig: NextAuthConfig = {
           cookieStore.set('token', user.token, {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Set user role cookie
           cookieStore.set('userRole', user.role || 'Employee', {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Set user data cookie
@@ -234,9 +297,10 @@ export const authConfig: NextAuthConfig = {
           cookieStore.set('userData', JSON.stringify(userData), {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: user.tokenExpires,
+            maxAge: 2 * 24 * 60 * 60, // 2 days in seconds
             path: '/',
             sameSite: 'lax',
+            domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
           });
 
           // Also update localStorage if we're in the browser
@@ -283,9 +347,21 @@ export const authConfig: NextAuthConfig = {
         }
 
         // Clear all auth-related cookies
-        cookieStore.set('token', '', { maxAge: -1, path: '/' });
-        cookieStore.set('userRole', '', { maxAge: -1, path: '/' });
-        cookieStore.set('userData', '', { maxAge: -1, path: '/' });
+        cookieStore.set('token', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
+        cookieStore.set('userRole', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
+        cookieStore.set('userData', '', {
+          maxAge: -1,
+          path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
+        });
       } catch (error) {
         console.error('Error clearing cookies in signOut event:', error);
       }
@@ -293,23 +369,60 @@ export const authConfig: NextAuthConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 2 * 24 * 60 * 60, // 2 days to match backend
   },
 };
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
+    // Get tenant information from the current domain
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const hostParts = hostname.split('.');
+    let tenant = 'base';
+
+    if (hostParts.length >= 3) {
+      const subdomain = hostParts[0] || '';
+      if (subdomain === 'www') {
+        tenant = 'base';
+      } else {
+        tenant = subdomain;
+      }
+    }
+
+    console.warn('Attempting to refresh token with:', {
+      apiUrl: API_URL,
+      tenant,
+      tenantType: tenant === 'base' ? 'base' : 'company',
+      hasRefreshToken: !!token.refreshToken,
+    });
+
     const response = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token.refreshToken}`,
+        'x-tenant': tenant,
+        'x-tenant-type': tenant === 'base' ? 'base' : 'company',
       },
+      body: JSON.stringify({
+        refreshToken: token.refreshToken,
+      }),
+    });
+
+    console.warn('Refresh token response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
     });
 
     const data = await response.json();
 
     if (!response.ok) {
+      console.error('Refresh token failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+        apiUrl: API_URL,
+      });
       throw data;
     }
 
@@ -319,9 +432,10 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       cookieStore.set('token', data.tokens.access_token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60, // 24 hours in seconds
+        maxAge: 2 * 24 * 60 * 60, // 2 days in seconds to match backend
         path: '/',
         sameSite: 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.hr-ify.com' : undefined,
       });
     } catch (error) {
       console.error('Error updating cookies in refreshAccessToken:', error);
@@ -330,12 +444,28 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     return {
       ...token,
       accessToken: data.tokens.access_token,
-      accessTokenExpires: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
+      accessTokenExpires: Date.now() + (2 * 24 * 60 * 60 * 1000), // 2 days to match backend
       refreshToken: data.tokens.refresh_token ?? token.refreshToken,
       error: undefined,
     };
   } catch (error) {
     console.error('RefreshAccessTokenError:', error);
+
+    // Check if it's a network/API connectivity issue
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.error('Network error - API server may be unreachable:', API_URL);
+    }
+
+    // Clear cookies and localStorage when refresh fails
+    if (typeof window !== 'undefined') {
+      try {
+        const { cookieUtils } = await import('./src/lib/cookie-utils');
+        cookieUtils.clearAuthCookies();
+      } catch (clearError) {
+        console.error('Error clearing auth cookies in refreshAccessToken:', clearError);
+      }
+    }
+
     return {
       ...token,
       error: 'RefreshAccessTokenError',

@@ -3,6 +3,7 @@
 @tailwind utilities;
 @layer base {
   :root {
+    /* Default values - will be overridden by branding system */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -28,6 +29,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --font-family: 'Poppins', sans-serif;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -61,7 +63,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-poppins;
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
   }
   .custom-table-header {
     @apply bg-[#F4F5F7]  text-left text-sm font-semibold p-4  text-[#11121A];

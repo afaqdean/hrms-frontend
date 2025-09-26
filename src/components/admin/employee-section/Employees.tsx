@@ -208,8 +208,8 @@ const Employees: React.FC<EmployeeListProp> = ({ employees, setter, scrollParent
                   </p>
                   {/* Position badge with hover effect */}
                   <div
-                    className={`w-fit rounded-full px-1 py-0.5 text-primary-100 group-hover:bg-primary-100 group-hover:text-white md:px-2 md:py-1 
-                      ${isSelected ? 'bg-primary-100 text-white' : ''}`}
+                    className={`w-fit rounded-full px-1 py-0.5 md:px-2 md:py-1 
+                      ${isSelected ? 'bg-primary text-primary-foreground' : 'text-primary-100 group-hover:bg-primary group-hover:text-primary-foreground'}`}
                   >
                     <p className="rounded-full px-2 py-1 text-sm">
                       {/* Mobile: Truncated last word */}

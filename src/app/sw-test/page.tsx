@@ -91,7 +91,7 @@ export default function ServiceWorkerTest() {
           <button
             type="button"
             onClick={handleRegisterClick}
-            className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="rounded px-4 py-2"
           >
             Register Service Worker
           </button>
@@ -99,7 +99,7 @@ export default function ServiceWorkerTest() {
           <button
             type="button"
             onClick={handleUnregisterClick}
-            className="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            className="rounded px-4 py-2"
             disabled={!swRegistration}
           >
             Unregister Service Worker
@@ -108,7 +108,7 @@ export default function ServiceWorkerTest() {
           <button
             type="button"
             onClick={handleCheckFilesClick}
-            className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+            className="rounded px-4 py-2"
           >
             Check SW File
           </button>

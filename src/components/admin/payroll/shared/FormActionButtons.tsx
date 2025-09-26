@@ -23,7 +23,7 @@ const FormActionButtons: React.FC<FormActionButtonsProps> = ({
       <Button
         type="submit"
         disabled={isFormDisabled}
-        className="w-full bg-primary-100 hover:bg-primary-100/90 sm:w-auto"
+        className="w-full sm:w-auto"
       >
         {isFormDisabled
           ? (

@@ -172,7 +172,7 @@ const EmployeeProfileDetails: React.FC<EmployeeProfileDetailsProps> = ({ employe
               <div className="hidden md:block">
                 <Image src={connectionLine} alt="realation" height={24} width={178} />
               </div>
-              <span className="rounded-full bg-primary-100 px-2 py-1 text-sm text-white">{employee.emergencyContact?.contact1?.relation || 'Not Specified'}</span>
+              <span className="rounded-full bg-primary px-2 py-1 text-sm text-primary-foreground">{employee.emergencyContact?.contact1?.relation || 'Not Specified'}</span>
             </span>
           </div>
           <div>
@@ -185,7 +185,7 @@ const EmployeeProfileDetails: React.FC<EmployeeProfileDetailsProps> = ({ employe
               <div className="hidden md:block">
                 <Image src={connectionLine} alt="realation" height={24} width={178} />
               </div>
-              <span className="rounded-full bg-primary-100 px-2 py-1 text-sm text-white">
+              <span className="rounded-full bg-primary px-2 py-1 text-sm text-primary-foreground">
                 <span>{employee.emergencyContact?.contact2?.relation || 'Not Specified'}</span>
               </span>
 

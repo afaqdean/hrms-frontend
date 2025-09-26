@@ -7,6 +7,7 @@ import ReactQueryWrapper from '@/components/ReactQueryWrapper';
 import StructuredData from '@/components/StructuredData';
 import { MultiStepFormProvider } from '@/containers/admin/employee-management/context/EmployeeFormContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { BrandingProvider } from '@/context/BrandingContext';
 import { LoadingProvider } from '@/context/LoadingContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { TenantProvider } from '@/context/TenantContext';
@@ -68,6 +69,7 @@ export default async function RootLayout(props: Readonly<{
   return (
     <html lang="en" className={`${poppins.variable}`}>
       <head>
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="theme-color" content="#ffffff" />
@@ -147,27 +149,29 @@ export default async function RootLayout(props: Readonly<{
         {/* Add this class */}
         <Suspense fallback={<div>Loading...</div>}>
           <SessionProvider>
-            <TenantProvider>
-              <AuthProvider>
-                <LoadingProvider>
-                  <MultiStepFormProvider>
-                    <ReactQueryWrapper>
+            <AuthProvider>
+              <LoadingProvider>
+                <MultiStepFormProvider>
+                  <ReactQueryWrapper>
+                    <TenantProvider>
                       <NotificationProvider>
-                        {props.children}
-                        <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
+                        <BrandingProvider>
+                          {props.children}
+                          <ReactQueryDevtools buttonPosition="bottom-right" initialIsOpen={false} />
 
-                        {/* Add structured data for better SEO */}
-                        <StructuredData type="Organization" />
-                        <StructuredData type="WebSite" />
+                          {/* Add structured data for better SEO */}
+                          <StructuredData type="Organization" />
+                          <StructuredData type="WebSite" />
 
-                        {/* Add the AuthErrorHandler for handling 401 errors */}
-                        <AuthErrorHandler />
+                          {/* Add the AuthErrorHandler for handling 401 errors */}
+                          <AuthErrorHandler />
+                        </BrandingProvider>
                       </NotificationProvider>
-                    </ReactQueryWrapper>
-                  </MultiStepFormProvider>
-                </LoadingProvider>
-              </AuthProvider>
-            </TenantProvider>
+                    </TenantProvider>
+                  </ReactQueryWrapper>
+                </MultiStepFormProvider>
+              </LoadingProvider>
+            </AuthProvider>
           </SessionProvider>
         </Suspense>
 

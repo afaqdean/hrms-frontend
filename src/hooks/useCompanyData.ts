@@ -3,10 +3,17 @@
 import type { Company, CompanyUpdateData } from '@/interfaces';
 import { API } from '@/Interceptors/Interceptor';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 export const useCompanyData = (companyId?: string) => {
   const queryClient = useQueryClient();
+  const [isClient, setIsClient] = useState(false);
+
+  // Only run on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Get company data
   const { data: company, isLoading, error, refetch } = useQuery({
@@ -15,7 +22,7 @@ export const useCompanyData = (companyId?: string) => {
       const response = await API.get(`/company/${companyId}`);
       return response.data;
     },
-    enabled: !!companyId,
+    enabled: isClient && !!companyId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
@@ -62,6 +69,34 @@ export const useCompanyData = (companyId?: string) => {
     deleteCompany: deleteCompanyMutation.mutate,
     deleteCompanyAsync: deleteCompanyMutation.mutateAsync,
     isDeleting: deleteCompanyMutation.isPending,
+  };
+};
+
+// Hook for getting company data by subdomain
+export const useCompanyBySubdomain = (subdomain?: string) => {
+  const [isClient, setIsClient] = useState(false);
+
+  // Only run on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const { data: company, isLoading, error, refetch } = useQuery({
+    queryKey: ['company-by-subdomain', subdomain],
+    queryFn: async (): Promise<Company> => {
+      const response = await API.get(`/company/by-subdomain/${subdomain}`);
+      return response.data;
+    },
+    enabled: isClient && !!subdomain,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    company,
+    isLoading,
+    error: error?.message,
+    refetch,
   };
 };
 

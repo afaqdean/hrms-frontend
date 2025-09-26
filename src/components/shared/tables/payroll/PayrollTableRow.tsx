@@ -74,7 +74,7 @@ export const PayrollTableRow: React.FC<PayrollTableRowProps> = ({
           <Button
             onClick={() => onDownload(payslip)}
             disabled={isDownloading}
-            className="flex items-center gap-2 bg-primary-100 text-white hover:bg-primary-100/90"
+            className="flex items-center gap-2"
             size="sm"
           >
             {isDownloading

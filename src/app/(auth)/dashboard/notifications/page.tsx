@@ -116,7 +116,7 @@ const MobileBrowserNotificationTester = () => {
           type="button"
           onClick={handleTestNotification}
           disabled={!isNotificationSupported}
-          className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+          className="rounded-md px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
         >
           Send Test Notification
         </button>
@@ -339,7 +339,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={handleRequestPermission}
-                      className="mt-2 rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
+                      className="mt-2 rounded px-3 py-1.5 text-sm font-medium"
                     >
                       Request Permission
                     </button>
@@ -352,7 +352,7 @@ export default function NotificationsPage() {
                     <button
                       type="button"
                       onClick={handleCopyToken}
-                      className="flex items-center rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"
+                      className="flex items-center rounded px-2 py-1 text-xs"
                     >
                       <Copy className="mr-1 size-3" />
                       {tokenCopied ? 'Copied!' : 'Copy'}
@@ -525,7 +525,7 @@ export default function NotificationsPage() {
                 <button
                   type="button"
                   onClick={handleClearAll}
-                  className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                  className="rounded-md px-4 py-2 text-sm font-medium"
                 >
                   Clear all
                 </button>

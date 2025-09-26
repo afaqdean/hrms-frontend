@@ -225,7 +225,7 @@ export default function CreateReviewRequest({
                     type="button"
                     onClick={() => setIsKPIModalOpen(true)}
                     size="sm"
-                    className="bg-blue-600 text-white shadow-md transition-all duration-200 hover:bg-blue-700 hover:shadow-lg"
+                    className="shadow-md transition-all duration-200 hover:shadow-lg"
                   >
                     <Plus className="mr-2 size-4" />
                     Add New Question
@@ -464,7 +464,7 @@ export default function CreateReviewRequest({
                   ? (
                       <Button
                         onClick={handleNext}
-                        className="bg-blue-600 text-white shadow-md transition-all duration-200 hover:bg-blue-700 hover:shadow-lg"
+                        className="shadow-md transition-all duration-200 hover:shadow-lg"
                       >
                         Next →
                       </Button>
@@ -473,7 +473,7 @@ export default function CreateReviewRequest({
                       <Button
                         onClick={handleSubmit}
                         disabled={createReviewRequestMutation.isPending}
-                        className="bg-green-600 text-white shadow-md transition-all duration-200 hover:bg-green-700 hover:shadow-lg"
+                        className="shadow-md transition-all duration-200 hover:shadow-lg"
                       >
                         {createReviewRequestMutation.isPending ? 'Creating...' : '✓ Create Request'}
                       </Button>

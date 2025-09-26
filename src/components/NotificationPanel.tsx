@@ -223,7 +223,7 @@ const NotificationPanel = () => {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+            className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
           >
             {notificationCount > 99 ? '99+' : notificationCount}
           </motion.div>
@@ -286,7 +286,7 @@ const NotificationPanel = () => {
                             type="button"
                             onClick={handleRequestPermission}
                             disabled={isEnablingNotifications}
-                            className="flex items-center justify-center gap-2 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex items-center justify-center gap-2 rounded px-3 py-1 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             {isEnablingNotifications && (
                               <svg className="size-3 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -349,7 +349,7 @@ const NotificationPanel = () => {
                     <div className="border-t bg-gray-100 p-4 shadow-inner">
                       <button
                         type="button"
-                        className="w-full rounded-md bg-blue-600 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
+                        className="w-full rounded-md py-2 text-center text-sm font-medium"
                         onClick={handleViewAll}
                       >
                         See all notifications
@@ -383,7 +383,7 @@ const NotificationPanel = () => {
                               type="button"
                               onClick={handleRequestPermission}
                               disabled={isEnablingNotifications}
-                              className="flex items-center justify-center gap-2 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                              className="flex items-center justify-center gap-2 rounded px-3 py-1 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50"
                             >
                               {isEnablingNotifications && (
                                 <svg className="size-3 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

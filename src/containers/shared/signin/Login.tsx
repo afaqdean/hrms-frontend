@@ -33,10 +33,9 @@ const LoginContent = () => {
           // Redirect admin to their company subdomain
           const companyUrl = `https://${userCompanySubdomain}.hr-ify.com/dashboard/admin/overview`;
           window.location.href = companyUrl;
-        } else if (userRole === 'admin') {
-          router.push('/dashboard/admin/overview');
         } else {
-          router.push('/dashboard/employee/overview');
+          // Let middleware handle the redirect to avoid conflicts
+          router.push('/dashboard');
         }
       }, 100);
     } else if (status === 'unauthenticated') {

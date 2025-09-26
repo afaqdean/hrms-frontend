@@ -14,16 +14,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/context/AuthContext';
 import { useLogout } from '@/hooks/useLogout';
-import { ChevronDown } from 'lucide-react';
-import Image from 'next/image';
+import { ChevronDown, Palette } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import huddleHRLogo from 'public/assets/huddle-image.png';
 import React, { useState } from 'react';
 import { BsArrowUpRightCircle } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { IoMdLogOut, IoMdPerson } from 'react-icons/io';
 import { Button } from '../../ui/button';
 import Avatar from '../avatars/avatar/Avatar';
+import DynamicLogo from './DynamicLogo';
 
 /**
  * Header Component
@@ -48,12 +47,10 @@ const Header = () => {
   return (
     <div className="hidden w-full items-center justify-between pb-3 md:flex">
       {/* Left Section: Logo */}
-      <Image
-        src={huddleHRLogo.src} // Company logo image
+      <DynamicLogo
         height={50}
         width={150}
         className="cursor-pointer object-contain"
-        alt="HuddleHR Logo"
         onClick={() => router.push(getDashboardPath())} // Redirect based on role
       />
 
@@ -63,7 +60,7 @@ const Header = () => {
         {/* Show 'Apply for Leave' button only on Leave History Page */}
         {pathname === '/dashboard/employee/leaves-history' && (
           <>
-            <Button variant="outline" onClick={() => setApplyLeave(true)} className="flex h-full items-center rounded-full hover:bg-primary-100 hover:text-white">
+            <Button variant="outline" onClick={() => setApplyLeave(true)} className="flex h-full items-center rounded-full">
               <BsArrowUpRightCircle />
               <span>Apply for Leave</span>
             </Button>
@@ -97,7 +94,7 @@ const Header = () => {
         </div>
 
         {/* Profile Dropdown Menu */}
-        <div className="group flex cursor-pointer items-center justify-between rounded-full border border-[#F1F1F1] bg-[#FFFFFF] hover:bg-primary-100 hover:text-white">
+        <div className="group flex cursor-pointer items-center justify-between rounded-full border border-[#F1F1F1] bg-[#FFFFFF]">
 
           {/* User Avatar */}
           <Avatar src={userData?.profilePic} className="group-hover:text-white" />
@@ -131,6 +128,17 @@ const Header = () => {
                   <IoMdPerson className="text-gray-500" />
                   <span>Profile Settings</span>
                 </DropdownMenuItem>
+
+                {/* Branding Option - Only for Admin */}
+                {userData?.role.toLowerCase() === 'admin' && (
+                  <DropdownMenuItem
+                    className="flex cursor-pointer justify-start"
+                    onClick={() => router.push('/dashboard/admin/branding')}
+                  >
+                    <Palette className="text-gray-500" />
+                    <span>Branding</span>
+                  </DropdownMenuItem>
+                )}
 
                 {/* Logout Option */}
                 <DropdownMenuItem

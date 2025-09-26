@@ -20,7 +20,8 @@ API.interceptors.request.use(
       const cookies = parseCookies();
       const token = cookies.token;
 
-      if (token) {
+      // Only add token if it exists and is not expired
+      if (token && token.trim() !== '') {
         // Set the Authorization header properly
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -31,18 +32,31 @@ API.interceptors.request.use(
       let tenant = 'base';
       let tenantType = 'base';
 
-      if (hostParts.length >= 3) {
-        // For subdomain.hr-ify.com
+      // Skip tenant detection for localhost
+      if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+        tenant = 'base';
+        tenantType = 'base';
+      } else if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com' || hostname.endsWith('.hr-ify.com')) {
+        if (hostname === 'hr-ify.com' || hostname === 'www.hr-ify.com') {
+          tenant = 'base';
+          tenantType = 'base';
+        } else {
+          // Extract subdomain from hr-ify.com (excluding www)
+          const subdomain = hostname.replace('.hr-ify.com', '');
+          if (subdomain === 'www') {
+            tenant = 'base';
+            tenantType = 'base';
+          } else {
+            tenant = subdomain;
+            tenantType = 'company';
+          }
+        }
+      } else if (hostParts.length >= 3) {
+        // For other subdomain.domain.com patterns
         tenant = hostParts[0] || 'base';
         tenantType = 'company';
       } else if (hostParts.length === 2) {
-        // For hr-ify.com (base domain)
-        tenant = 'base';
-        tenantType = 'base';
-      }
-
-      // Skip tenant detection for localhost
-      if (hostname === 'localhost' || hostname.startsWith('127.0.0.1')) {
+        // For domain.com (base domain)
         tenant = 'base';
         tenantType = 'base';
       }

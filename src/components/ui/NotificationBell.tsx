@@ -71,7 +71,7 @@ export function NotificationBell() {
       >
         <Bell className="size-6 text-gray-600" />
         {notificationCount > 0 && (
-          <span className="absolute right-0 top-0 inline-flex -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-white">
+          <span className="absolute right-0 top-0 inline-flex -translate-y-1/2 translate-x-1/2 items-center justify-center rounded-full bg-destructive px-2 py-1 text-xs font-bold leading-none text-destructive-foreground">
             {notificationCount > 99 ? '99+' : notificationCount}
           </span>
         )}

@@ -131,7 +131,7 @@ const EmployeeManagement: React.FC = () => {
                   localStorage.removeItem('employee_creation_form_data');
                   resetForm();
                 }}
-                className="flex size-12 items-center justify-center gap-2 rounded-full bg-primary-100 text-white hover:bg-black  md:size-10 md:w-52 md:rounded-xl  md:px-4 md:py-2"
+                className="flex size-12 items-center justify-center gap-2 rounded-full md:size-10 md:w-52 md:rounded-xl md:px-4 md:py-2"
               >
                 <span className="flex items-center  justify-center gap-2">
                   <IoMdAdd className=" size-6 text-sm  md:size-5 md:text-lg" />
@@ -153,7 +153,7 @@ const EmployeeManagement: React.FC = () => {
 
                 <Link
                   href="/dashboard/admin/add-employee"
-                  className="flex size-10 items-center justify-center rounded-full bg-primary-100 text-white  hover:bg-black md:w-52 md:rounded-xl  md:px-4 md:py-2"
+                  className="flex size-10 items-center justify-center rounded-full md:w-52 md:rounded-xl md:px-4 md:py-2"
                   onClick={() => {
                     localStorage.removeItem('employee_creation_form_data');
                     resetForm();

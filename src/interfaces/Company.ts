@@ -1,5 +1,6 @@
 export type Company = {
-  id: string;
+  id?: string;
+  _id?: string;
   name: string;
   subdomain: string;
   createdAt: string;
