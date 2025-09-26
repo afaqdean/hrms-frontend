@@ -3,6 +3,7 @@
 @tailwind utilities;
 @layer base {
   :root {
+    /* Default values - will be overridden by branding system */
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;

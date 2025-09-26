@@ -27,12 +27,29 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     const secondaryHsl = hexToHsl(brandingData.secondaryColor);
     const backgroundHsl = hexToHsl(brandingData.backgroundColor);
 
-    root.style.setProperty('--primary', primaryHsl);
-    root.style.setProperty('--secondary', secondaryHsl);
-    root.style.setProperty('--background', backgroundHsl);
+    // Use setProperty with important flag to ensure it overrides CSS
+    root.style.setProperty('--primary', primaryHsl, 'important');
+    root.style.setProperty('--secondary', secondaryHsl, 'important');
+    root.style.setProperty('--background', backgroundHsl, 'important');
+
+    // Debug: Log the applied values
+    console.warn('🎨 Applied branding values:', {
+      primary: primaryHsl,
+      secondary: secondaryHsl,
+      background: backgroundHsl,
+      fontFamily: brandingData.fontFamily,
+    });
+
+    // Debug: Check what's actually in the DOM
+    const computedStyle = getComputedStyle(root);
+    console.warn('🎨 Computed CSS values:', {
+      primary: computedStyle.getPropertyValue('--primary'),
+      secondary: computedStyle.getPropertyValue('--secondary'),
+      background: computedStyle.getPropertyValue('--background'),
+    });
 
     // Apply font family
-    root.style.setProperty('--font-family', `'${brandingData.fontFamily}', sans-serif`);
+    root.style.setProperty('--font-family', `'${brandingData.fontFamily}', sans-serif`, 'important');
 
     // Apply logo if available
     if (brandingData.logoUrl) {

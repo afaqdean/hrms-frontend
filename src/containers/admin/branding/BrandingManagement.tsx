@@ -19,9 +19,9 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 const brandingSchema = z.object({
-  primaryColor: z.string().optional(),
-  secondaryColor: z.string().optional(),
-  backgroundColor: z.string().optional(),
+  primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color format').optional(),
+  secondaryColor: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color format').optional(),
+  backgroundColor: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color format').optional(),
   logoUrl: z.string().url().optional().or(z.literal('')),
   logoAltText: z.string().optional(),
   faviconUrl: z.string().url().optional().or(z.literal('')),
@@ -80,6 +80,25 @@ const BrandingManagement: React.FC = () => {
   // Watch form values for live preview
   const watchedValues = watch();
 
+  // Apply live preview when form values change
+  React.useEffect(() => {
+    if (watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily) {
+      const livePreviewData = {
+        id: 'live-preview',
+        companyId: 'live-preview',
+        primaryColor: watchedValues.primaryColor || '#11121A',
+        secondaryColor: watchedValues.secondaryColor || '#F4F5F7',
+        backgroundColor: watchedValues.backgroundColor || '#FFFFFF',
+        fontFamily: watchedValues.fontFamily || 'Poppins',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      // Apply live preview branding
+      applyBranding(livePreviewData);
+    }
+  }, [watchedValues.primaryColor, watchedValues.secondaryColor, watchedValues.backgroundColor, watchedValues.fontFamily, applyBranding]);
   // Default values for comparison
   const defaultValues = {
     primaryColor: '#11121A',
