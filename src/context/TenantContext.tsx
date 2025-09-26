@@ -106,10 +106,17 @@ export const TenantProvider: React.FC<TenantProviderProps> = ({ children }) => {
 
   // Update companyId when company data is loaded
   useEffect(() => {
+    console.warn('🔍 TenantContext company effect:', {
+      company: company ? { id: company.id, subdomain: company.subdomain } : null,
+      companyId,
+      companyLoading,
+    });
+
     if (company && company.id && companyId === 'pending') {
+      console.warn('🔍 Updating companyId from pending to:', company.id);
       setCompanyId(company.id);
     }
-  }, [company, companyId]);
+  }, [company, companyId, companyLoading]);
 
   const value: TenantContextType = useMemo(() => ({
     tenant,
