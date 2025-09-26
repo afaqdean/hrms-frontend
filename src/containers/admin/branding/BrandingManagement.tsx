@@ -37,6 +37,7 @@ const BrandingManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [faviconPreview, setFaviconPreview] = useState<string>('');
+  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
 
   const {
     branding,
@@ -84,15 +85,18 @@ const BrandingManagement: React.FC = () => {
   // Live preview - apply changes as user types (without conflicting with database branding)
   React.useEffect(() => {
     // Only apply live preview if we have form values and they're different from the current branding
-    const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily;
+    // Also check if we're not in the initial load state
+    const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily || watchedValues.logoUrl;
     const isDifferentFromCurrent = !currentBranding || (
       watchedValues.primaryColor !== currentBranding.primaryColor
       || watchedValues.secondaryColor !== currentBranding.secondaryColor
       || watchedValues.backgroundColor !== currentBranding.backgroundColor
       || watchedValues.fontFamily !== currentBranding.fontFamily
+      || watchedValues.logoUrl !== currentBranding.logoUrl
     );
 
-    if (hasFormValues && isDifferentFromCurrent) {
+    // Only apply live preview after user has interacted with the form
+    if (hasFormValues && isDifferentFromCurrent && hasUserInteracted) {
       const livePreviewData = {
         id: 'live-preview',
         companyId: 'live-preview',
@@ -100,6 +104,9 @@ const BrandingManagement: React.FC = () => {
         secondaryColor: watchedValues.secondaryColor || '#F4F5F7',
         backgroundColor: watchedValues.backgroundColor || '#FFFFFF',
         fontFamily: watchedValues.fontFamily || 'Poppins',
+        logoUrl: watchedValues.logoUrl || currentBranding?.logoUrl,
+        logoAltText: watchedValues.logoAltText || currentBranding?.logoAltText,
+        faviconUrl: watchedValues.faviconUrl || currentBranding?.faviconUrl,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -108,7 +115,7 @@ const BrandingManagement: React.FC = () => {
       // Apply live preview branding
       applyBranding(livePreviewData);
     }
-  }, [watchedValues.primaryColor, watchedValues.secondaryColor, watchedValues.backgroundColor, watchedValues.fontFamily, applyBranding, currentBranding]);
+  }, [watchedValues.primaryColor, watchedValues.secondaryColor, watchedValues.backgroundColor, watchedValues.fontFamily, watchedValues.logoUrl, watchedValues.logoAltText, watchedValues.faviconUrl, applyBranding, currentBranding, branding, hasUserInteracted]);
   // Default values for comparison
   const defaultValues = {
     primaryColor: '#11121A',
@@ -240,6 +247,7 @@ const BrandingManagement: React.FC = () => {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setHasUserInteracted(true);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
@@ -253,6 +261,7 @@ const BrandingManagement: React.FC = () => {
   const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setHasUserInteracted(true);
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
@@ -317,6 +326,7 @@ const BrandingManagement: React.FC = () => {
                         className="h-10 w-16 rounded border p-1"
                         onChange={(e) => {
                           setValue('primaryColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                       <Input
@@ -325,6 +335,7 @@ const BrandingManagement: React.FC = () => {
                         className="flex-1"
                         onChange={(e) => {
                           setValue('primaryColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                     </div>
@@ -343,6 +354,7 @@ const BrandingManagement: React.FC = () => {
                         className="h-10 w-16 rounded border p-1"
                         onChange={(e) => {
                           setValue('secondaryColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                       <Input
@@ -351,6 +363,7 @@ const BrandingManagement: React.FC = () => {
                         className="flex-1"
                         onChange={(e) => {
                           setValue('secondaryColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                     </div>
@@ -369,6 +382,7 @@ const BrandingManagement: React.FC = () => {
                         className="h-10 w-16 rounded border p-1"
                         onChange={(e) => {
                           setValue('backgroundColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                       <Input
@@ -377,6 +391,7 @@ const BrandingManagement: React.FC = () => {
                         className="flex-1"
                         onChange={(e) => {
                           setValue('backgroundColor', e.target.value);
+                          setHasUserInteracted(true);
                         }}
                       />
                     </div>
@@ -391,6 +406,10 @@ const BrandingManagement: React.FC = () => {
                   <select
                     {...register('fontFamily')}
                     className="w-full rounded-md border border-gray-300 p-2 focus:border-transparent focus:ring-2 focus:ring-primary"
+                    onChange={(e) => {
+                      setValue('fontFamily', e.target.value);
+                      setHasUserInteracted(true);
+                    }}
                   >
                     <option value="Poppins">Poppins</option>
                     <option value="Inter">Inter</option>
