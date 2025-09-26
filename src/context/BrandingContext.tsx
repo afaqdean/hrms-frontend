@@ -71,28 +71,25 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     setCurrentBranding(brandingData);
   }, []);
 
-  // Load branding from localStorage on mount
+  // Load branding from localStorage on mount (only as fallback)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !branding && !isLoading) {
       const savedBranding = localStorage.getItem('branding');
       if (savedBranding) {
         try {
           const parsedBranding = JSON.parse(savedBranding);
           if (process.env.NODE_ENV === 'development') {
-            console.warn('Loading saved branding from localStorage:', parsedBranding);
+            console.warn('Loading saved branding from localStorage as fallback:', parsedBranding);
           }
-          // Only apply if we don't have current branding yet (avoid race condition)
-          if (!currentBranding) {
-            applyBranding(parsedBranding);
-            setCurrentBranding(parsedBranding);
-          }
+          applyBranding(parsedBranding);
+          setCurrentBranding(parsedBranding);
         } catch (error) {
           console.error('Error parsing saved branding:', error);
           localStorage.removeItem('branding');
         }
       }
     }
-  }, [applyBranding, currentBranding]);
+  }, [applyBranding, branding, isLoading]);
 
   // Reset to default branding
   const resetToDefault = useCallback(() => {
@@ -128,31 +125,21 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     setCurrentBranding(null);
   }, []);
 
-  // Apply branding when it changes
+  // Apply branding when it changes from the database
   useEffect(() => {
-    console.error('🎨 Branding context effect triggered:', { branding, isLoading, currentBranding });
+    console.error('🎨 Branding context effect triggered:', { branding, isLoading });
     if (branding && !isLoading) {
-      // Only apply if it's different from current branding to avoid unnecessary updates
-      const isDifferent = !currentBranding
-        || currentBranding.primaryColor !== branding.primaryColor
-        || currentBranding.secondaryColor !== branding.secondaryColor
-        || currentBranding.backgroundColor !== branding.backgroundColor
-        || currentBranding.fontFamily !== branding.fontFamily
-        || currentBranding.logoUrl !== branding.logoUrl
-        || currentBranding.faviconUrl !== branding.faviconUrl;
-
-      console.error('🎨 Is branding different?', isDifferent);
-      if (isDifferent) {
-        console.error('🎨 Applying updated branding:', branding);
-        applyBranding(branding);
-        setCurrentBranding(branding);
-      }
-    } else if (!branding && !isLoading && currentBranding) {
+      // Always apply branding from database, regardless of current state
+      // This ensures database branding takes precedence over localStorage
+      console.error('🎨 Applying branding from database:', branding);
+      applyBranding(branding);
+      setCurrentBranding(branding);
+    } else if (!branding && !isLoading) {
       console.error('🎨 No branding found, resetting to default');
       // Reset to default when no branding is found
       resetToDefault();
     }
-  }, [branding, isLoading, applyBranding, resetToDefault, currentBranding]);
+  }, [branding, isLoading, applyBranding, resetToDefault]);
 
   // Debug logging for branding state changes
   useEffect(() => {

@@ -26,43 +26,6 @@ type UnsafeUnwrappedCookies = {
 };
 
 const API_URL = (process.env.NEXT_PUBLIC_BASE_URL || 'https://code-huddle-hrms-dev-61ae656862e5.herokuapp.com').replace(/\/$/, '');
-// These interfaces are put in to another next-auth.s.ts file inside the types folder.
-// declare module 'next-auth' {
-//   type Session = {
-//     user: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       role?: string;
-//     };
-//     accessToken?: string;
-//     error?: string;
-//   };
-//   type User = {
-//     role?: string;
-//     accessToken?: string;
-//     refreshToken?: string;
-//     accessTokenExpires?: number;
-//   };
-// }
-
-// declare module 'next-auth/jwt' {
-//   type JWT = {
-//     accessToken?: string;
-//     refreshToken?: string;
-//     accessTokenExpires?: number;
-//     user?: {
-//       id: string;
-//       email: string;
-//       name: string;
-//       role?: string;
-//     };
-//     error?: string;
-//   };
-// }
-
-// Note: We're not using localStorage directly in this server component
-// Instead, we'll handle token storage in the client components
 
 export const authConfig: NextAuthConfig = {
   secret: process.env.NEXTAUTH_SECRET || 'HRMS-SECRETS',
