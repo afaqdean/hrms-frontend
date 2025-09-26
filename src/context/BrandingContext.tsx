@@ -175,11 +175,19 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     });
 
     if (branding && !isLoading) {
-      console.warn('🎨 Applying branding from database');
-      // Always apply branding from database, regardless of current state
-      // This ensures database branding takes precedence over localStorage
-      applyBranding(branding);
-      setCurrentBranding(branding);
+      // Don't apply if live preview is active
+      const isLivePreview = currentBranding?.id === 'live-preview';
+
+      if (!isLivePreview) {
+        console.warn('🎨 Applying branding from database:', {
+          brandingId: branding.id,
+          isDefault: branding.id === 'default',
+        });
+        applyBranding(branding);
+        setCurrentBranding(branding);
+      } else {
+        console.warn('🎨 Skipping database branding - live preview active');
+      }
     } else if (!branding && !isLoading) {
       console.warn('🎨 No branding found, resetting to default');
       // Reset to default when no branding is found
@@ -199,13 +207,20 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     }
   }, [branding, isLoading, error, currentBranding]);
 
+  // Clear current branding (useful for clearing live preview)
+  const clearCurrentBranding = useCallback(() => {
+    console.warn('🎨 Clearing current branding');
+    setCurrentBranding(null);
+  }, []);
+
   const value: BrandingContextType = useMemo(() => ({
     branding: currentBranding,
     isLoading,
     error,
     applyBranding,
     resetToDefault,
-  }), [currentBranding, isLoading, error, applyBranding, resetToDefault]);
+    clearCurrentBranding,
+  }), [currentBranding, isLoading, error, applyBranding, resetToDefault, clearCurrentBranding]);
 
   return (
     <BrandingContext.Provider value={value}>

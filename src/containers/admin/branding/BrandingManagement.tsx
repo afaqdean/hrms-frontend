@@ -44,7 +44,7 @@ const BrandingManagement: React.FC = () => {
     isUpdating,
   } = useBranding();
 
-  const { applyBranding, branding: currentBranding } = useBrandingContext();
+  const { applyBranding, branding: currentBranding, clearCurrentBranding } = useBrandingContext();
 
   // Listen for localStorage errors
   React.useEffect(() => {
@@ -193,18 +193,21 @@ const BrandingManagement: React.FC = () => {
 
       if (tenantType === 'company' && companyId) {
         // For company tenants, use the actual company ID
+        console.warn('🔍 Attempting to save company branding:', { companyId, submitData });
         try {
-          await updateBrandingMutation.mutateAsync({
+          const result = await updateBrandingMutation.mutateAsync({
             companyId,
             updateData: submitData,
           });
+          console.warn('🔍 Update branding success:', result);
         } catch (error) {
           console.error('Update branding failed, trying to create:', error);
           // If update fails, try to create new branding
-          await createBrandingMutation.mutateAsync({
+          const result = await createBrandingMutation.mutateAsync({
             companyId,
             ...submitData,
           });
+          console.warn('🔍 Create branding success:', result);
         }
       } else if (userData?.id) {
         // For base domain users, use user ID as fallback
@@ -239,6 +242,8 @@ const BrandingManagement: React.FC = () => {
       // Add a small delay to prevent immediate revert from cache invalidation
       setTimeout(() => {
         console.warn('🎨 Save completed successfully');
+        // Clear live preview after successful save
+        clearCurrentBranding();
         toast.success('Branding updated successfully!');
       }, 100);
     } catch (error) {

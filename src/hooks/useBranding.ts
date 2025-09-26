@@ -6,7 +6,7 @@ import { brandingApi } from '../services/brandingApi';
 
 export const useBranding = () => {
   const { tenant, tenantType } = useTenant();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userData } = useAuth();
   const queryClient = useQueryClient();
 
   // Get branding based on tenant type
@@ -16,11 +16,37 @@ export const useBranding = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['branding', tenant, tenantType],
+    queryKey: ['branding', tenant, tenantType, userData?.id],
     queryFn: async () => {
+      console.warn('🔍 useBranding queryFn called:', {
+        tenantType,
+        tenant,
+        userData: userData?.id,
+        isAuthenticated,
+      });
+
       if (tenantType === 'company' && tenant) {
-        return await brandingApi.getBrandingBySubdomain(tenant);
+        console.warn('🔍 Fetching company branding for subdomain:', tenant);
+        try {
+          const result = await brandingApi.getBrandingBySubdomain(tenant);
+          console.warn('🔍 Company branding result:', result);
+          return result;
+        } catch (error) {
+          console.warn('🔍 Company branding fetch failed:', error);
+          throw error;
+        }
       } else {
+        // For base domain, try to get user-specific branding first
+        if (userData?.id) {
+          try {
+            console.warn('🔍 Trying to get user-specific branding for user:', userData.id);
+            return await brandingApi.getBrandingByCompanyId(userData.id);
+          } catch (error) {
+            console.warn('No user-specific branding found, falling back to default:', error);
+          }
+        }
+
+        // Fall back to default branding
         return await brandingApi.getDefaultBranding();
       }
     },

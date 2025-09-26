@@ -7,6 +7,7 @@ export type BrandingContextType = {
   error: any;
   applyBranding: (branding: CompanyBranding) => void;
   resetToDefault: () => void;
+  clearCurrentBranding: () => void;
 };
 
 export const BrandingContext = createContext<BrandingContextType | undefined>(undefined);
