@@ -42,10 +42,9 @@ const BrandingManagement: React.FC = () => {
     createBrandingMutation,
     updateBrandingMutation,
     isUpdating,
-    refetch,
   } = useBranding();
 
-  const { applyBranding } = useBrandingContext();
+  const { applyBranding, branding: currentBranding } = useBrandingContext();
 
   // Listen for localStorage errors
   React.useEffect(() => {
@@ -80,9 +79,39 @@ const BrandingManagement: React.FC = () => {
   // Watch form values for live preview
   const watchedValues = watch();
 
-  // Apply live preview when form values change
+  // Live preview - apply changes as user types (without conflicting with database branding)
   React.useEffect(() => {
-    if (watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily) {
+    console.warn('🎨 Live preview effect triggered:', {
+      watchedValues: {
+        primaryColor: watchedValues.primaryColor,
+        secondaryColor: watchedValues.secondaryColor,
+        backgroundColor: watchedValues.backgroundColor,
+        fontFamily: watchedValues.fontFamily,
+      },
+      currentBranding: {
+        primaryColor: currentBranding?.primaryColor,
+        secondaryColor: currentBranding?.secondaryColor,
+        backgroundColor: currentBranding?.backgroundColor,
+        fontFamily: currentBranding?.fontFamily,
+      },
+    });
+
+    // Only apply live preview if we have form values and they're different from the current branding
+    const hasFormValues = watchedValues.primaryColor || watchedValues.secondaryColor || watchedValues.backgroundColor || watchedValues.fontFamily;
+    const isDifferentFromCurrent = !currentBranding || (
+      watchedValues.primaryColor !== currentBranding.primaryColor
+      || watchedValues.secondaryColor !== currentBranding.secondaryColor
+      || watchedValues.backgroundColor !== currentBranding.backgroundColor
+      || watchedValues.fontFamily !== currentBranding.fontFamily
+    );
+
+    console.warn('🎨 Live preview conditions:', {
+      hasFormValues,
+      isDifferentFromCurrent,
+      willApply: hasFormValues && isDifferentFromCurrent,
+    });
+
+    if (hasFormValues && isDifferentFromCurrent) {
       const livePreviewData = {
         id: 'live-preview',
         companyId: 'live-preview',
@@ -95,10 +124,11 @@ const BrandingManagement: React.FC = () => {
         updatedAt: new Date(),
       };
 
+      console.warn('🎨 Applying live preview branding:', livePreviewData);
       // Apply live preview branding
       applyBranding(livePreviewData);
     }
-  }, [watchedValues.primaryColor, watchedValues.secondaryColor, watchedValues.backgroundColor, watchedValues.fontFamily, applyBranding]);
+  }, [watchedValues.primaryColor, watchedValues.secondaryColor, watchedValues.backgroundColor, watchedValues.fontFamily, applyBranding, currentBranding]);
   // Default values for comparison
   const defaultValues = {
     primaryColor: '#11121A',
@@ -148,6 +178,8 @@ const BrandingManagement: React.FC = () => {
 
   const onSubmit = async (data: BrandingFormData) => {
     try {
+      // Debug: Log tenant information
+      console.warn('🔍 Tenant info:', { tenantType, companyId, userData: userData?.id });
       // Filter out empty values and prepare the data for submission
       const submitData = {
         primaryColor: data.primaryColor || '#11121A',
@@ -201,15 +233,14 @@ const BrandingManagement: React.FC = () => {
       };
 
       // Apply branding immediately for instant visual feedback
+      console.warn('🎨 Applying branding after save:', brandingToApply);
       applyBranding(brandingToApply);
 
-      // Refresh the branding data and apply it to the context
-      console.error('🔄 Refreshing branding data...');
-      await refetch();
-      console.error('✅ Branding data refreshed');
-      console.error('🔄 Current branding after refresh:', branding);
-
-      toast.success('Branding updated successfully!');
+      // Add a small delay to prevent immediate revert from cache invalidation
+      setTimeout(() => {
+        console.warn('🎨 Save completed successfully');
+        toast.success('Branding updated successfully!');
+      }, 100);
     } catch (error) {
       toast.error('Failed to update branding. Please try again.');
       console.error('Error updating branding:', error);

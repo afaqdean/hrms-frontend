@@ -36,7 +36,8 @@ export const useBranding = () => {
       brandingApi.createBranding(createBrandingDto),
     onSuccess: (data) => {
       console.warn('Create branding mutation success:', data);
-      queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
+      // Don't invalidate immediately to prevent revert
+      // The branding context will handle the update
     },
     onError: (error) => {
       console.error('Create branding mutation error:', error);
@@ -49,7 +50,8 @@ export const useBranding = () => {
       brandingApi.updateBranding(companyId, updateData),
     onSuccess: (data) => {
       console.warn('Update branding mutation success:', data);
-      queryClient.invalidateQueries({ queryKey: ['branding', tenant, tenantType] });
+      // Don't invalidate immediately to prevent revert
+      // The branding context will handle the update
     },
     onError: (error) => {
       console.error('Update branding mutation error:', error);

@@ -16,7 +16,17 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding to CSS variables
   const applyBranding = useCallback((brandingData: CompanyBranding) => {
+    console.warn('🎨 applyBranding called with:', {
+      id: brandingData.id,
+      companyId: brandingData.companyId,
+      primaryColor: brandingData.primaryColor,
+      secondaryColor: brandingData.secondaryColor,
+      backgroundColor: brandingData.backgroundColor,
+      fontFamily: brandingData.fontFamily,
+    });
+
     if (typeof window === 'undefined') {
+      console.warn('🎨 Skipping applyBranding - not in browser');
       return;
     }
 
@@ -28,21 +38,20 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
     const backgroundHsl = hexToHsl(brandingData.backgroundColor);
 
     // Use setProperty with important flag to ensure it overrides CSS
-    root.style.setProperty('--primary', primaryHsl, 'important');
-    root.style.setProperty('--secondary', secondaryHsl, 'important');
-    root.style.setProperty('--background', backgroundHsl, 'important');
-
-    // Debug: Log the applied values
-    console.warn('🎨 Applied branding values:', {
+    console.warn('🎨 Setting CSS variables:', {
       primary: primaryHsl,
       secondary: secondaryHsl,
       background: backgroundHsl,
       fontFamily: brandingData.fontFamily,
     });
 
-    // Debug: Check what's actually in the DOM
+    root.style.setProperty('--primary', primaryHsl, 'important');
+    root.style.setProperty('--secondary', secondaryHsl, 'important');
+    root.style.setProperty('--background', backgroundHsl, 'important');
+
+    // Verify the values were set
     const computedStyle = getComputedStyle(root);
-    console.warn('🎨 Computed CSS values:', {
+    console.warn('🎨 CSS variables after setting:', {
       primary: computedStyle.getPropertyValue('--primary'),
       secondary: computedStyle.getPropertyValue('--secondary'),
       background: computedStyle.getPropertyValue('--background'),
@@ -144,19 +153,39 @@ export const BrandingProvider: React.FC<BrandingProviderProps> = ({ children }) 
 
   // Apply branding when it changes from the database
   useEffect(() => {
-    console.error('🎨 Branding context effect triggered:', { branding, isLoading });
+    console.warn('🎨 BrandingContext effect triggered:', {
+      branding: branding
+        ? {
+            id: branding.id,
+            companyId: branding.companyId,
+            primaryColor: branding.primaryColor,
+            secondaryColor: branding.secondaryColor,
+            backgroundColor: branding.backgroundColor,
+            fontFamily: branding.fontFamily,
+          }
+        : null,
+      isLoading,
+      currentBranding: currentBranding
+        ? {
+            id: currentBranding.id,
+            companyId: currentBranding.companyId,
+            primaryColor: currentBranding.primaryColor,
+          }
+        : null,
+    });
+
     if (branding && !isLoading) {
+      console.warn('🎨 Applying branding from database');
       // Always apply branding from database, regardless of current state
       // This ensures database branding takes precedence over localStorage
-      console.error('🎨 Applying branding from database:', branding);
       applyBranding(branding);
       setCurrentBranding(branding);
     } else if (!branding && !isLoading) {
-      console.error('🎨 No branding found, resetting to default');
+      console.warn('🎨 No branding found, resetting to default');
       // Reset to default when no branding is found
       resetToDefault();
     }
-  }, [branding, isLoading, applyBranding, resetToDefault]);
+  }, [branding, isLoading, applyBranding, resetToDefault, currentBranding]);
 
   // Debug logging for branding state changes
   useEffect(() => {
